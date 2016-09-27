@@ -12,8 +12,8 @@ type Client interface {
 	FetchCommitsToPathSince(string, time.Time) ([][]byte, error)
 }
 
-// NewClient returns a new github/client.Client that is ready for use
-func NewClient(repoOwner string, repoName string, accessToken string) Client {
+// New returns a new github/client.Client that is ready for use
+func New(repoOwner string, repoName string, accessToken string) Client {
 	return &defaultclient{
 		accessToken: accessToken,
 		repoOwner:   repoOwner,
