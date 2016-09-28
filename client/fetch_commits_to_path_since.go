@@ -16,7 +16,7 @@ func (c *defaultclient) FetchCommitsToPathSince(path string, since time.Time) ([
 
 	params := &url.Values{}
 	//TODO add test for this
-	if path != "." && path != "" && path != "./" {
+	if path != "" {
 		params.Add("path", path)
 	}
 
