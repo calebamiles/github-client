@@ -1,12 +1,14 @@
 package client
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 )
 
 const (
-	httpsScheme = "https"
+	httpsScheme         = "https"
+	authorizationHeader = "Authorization"
 )
 
 // A PaginationFunc processes an http response and returns the current
@@ -20,11 +22,15 @@ type Fetcher interface {
 
 // NewFetcher returns the default fetcher which understands how to use
 // an authorization header to authenticate HTTP requests
-func NewFetcher() Fetcher {
-	return &defaultFetcher{}
+func NewFetcher(accessToken string) Fetcher {
+	return &defaultFetcher{
+		accessToken: accessToken,
+	}
 }
 
-type defaultFetcher struct{}
+type defaultFetcher struct {
+	accessToken string
+}
 
 func (f *defaultFetcher) Fetch(paginate PaginationFunc, url string) ([][]byte, error) {
 	var allPageBodies [][]byte
@@ -44,6 +50,7 @@ func (f *defaultFetcher) Fetch(paginate PaginationFunc, url string) ([][]byte, e
 			return nil, loopErr
 		}
 
+		loopReq.Header.Set("Authorization", fmt.Sprintf("token %s", f.accessToken))
 		loopResp, loopErr = c.Do(loopReq)
 		if loopErr != nil {
 			return nil, loopErr
