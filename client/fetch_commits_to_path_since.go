@@ -6,6 +6,10 @@ import (
 	"time"
 )
 
+const (
+	numberPagesToRequest = "1000"
+)
+
 func (c *defaultclient) FetchCommitsToPathSince(path string, since time.Time) ([][]byte, error) {
 	f := NewFetcher(c.accessToken)
 	urlString := fmt.Sprintf("https://api.github.com/repos/%s/%s/commits", c.repoOwner, c.repoName)
@@ -21,8 +25,7 @@ func (c *defaultclient) FetchCommitsToPathSince(path string, since time.Time) ([
 	}
 
 	params.Add("since", since.Format(DateFormat))
-	params.Add("per_page", fmt.Sprintf("%d", 1000)) //TODO get this tuning variable out of here
-
+	params.Add("per_page", numberPagesToRequest)
 	u.RawQuery = params.Encode()
 
 	commitPages, err := f.Fetch(PaginateGitHubResponse, u.String())
