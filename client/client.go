@@ -4,7 +4,8 @@ import "time"
 
 const (
 	// DateFormat is an ISO 8601 formatish format
-	DateFormat = "2006-01-02T15:04:05-0700"
+	DateFormat           = "2006-01-02T15:04:05-0700"
+	numberPagesToRequest = "1000"
 )
 
 // A Client returns all pages associated with a GitHub API request

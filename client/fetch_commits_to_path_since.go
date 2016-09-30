@@ -4,14 +4,12 @@ import (
 	"fmt"
 	"net/url"
 	"time"
+
+	"github.com/calebamiles/github-client/client/internal"
 )
 
-const (
-	numberPagesToRequest = "1000"
-)
-
-func (c *defaultclient) FetchCommitsToPathSince(path string, since time.Time) ([][]byte, error) {
-	f := NewFetcher(c.accessToken)
+func (c *defaultclient) FetchCommitsToPathSincePages(path string, since time.Time) ([][]byte, error) {
+	f := internal.NewFetcher(c.accessToken)
 	urlString := fmt.Sprintf("https://api.github.com/repos/%s/%s/commits", c.repoOwner, c.repoName)
 	u, err := url.Parse(urlString)
 	if err != nil {
@@ -28,10 +26,5 @@ func (c *defaultclient) FetchCommitsToPathSince(path string, since time.Time) ([
 	params.Add("per_page", numberPagesToRequest)
 	u.RawQuery = params.Encode()
 
-	commitPages, err := f.Fetch(PaginateGitHubResponse, u.String())
-	if err != nil {
-		return nil, err
-	}
-
-	return commitPages, nil
+	return f.Fetch(u.String())
 }

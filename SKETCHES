@@ -26,7 +26,7 @@ type IssueFetcher interface {
 }
 ```
 
-creating a client will likely involve specifiying the repo and
+creating a client will likely involve specifying the repo and
 some secret for connecting but that messiness could probably be
 hidden in someone's main() :)
 

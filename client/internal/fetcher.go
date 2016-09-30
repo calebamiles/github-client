@@ -1,4 +1,4 @@
-package client
+package internal
 
 import (
 	"fmt"
@@ -17,7 +17,7 @@ type PaginationFunc func(*http.Response) (currentPage []byte, nextPageURL string
 
 // A Fetcher uses a paginator to return all pages reachable from a base URL
 type Fetcher interface {
-	Fetch(PaginationFunc, string) ([][]byte, error)
+	Fetch(string) ([][]byte, error)
 }
 
 // NewFetcher returns the default fetcher which understands how to use
@@ -25,14 +25,16 @@ type Fetcher interface {
 func NewFetcher(accessToken string) Fetcher {
 	return &defaultFetcher{
 		accessToken: accessToken,
+		paginate:    PaginateGitHubResponse,
 	}
 }
 
 type defaultFetcher struct {
 	accessToken string
+	paginate    PaginationFunc
 }
 
-func (f *defaultFetcher) Fetch(paginate PaginationFunc, url string) ([][]byte, error) {
+func (f *defaultFetcher) Fetch(url string) ([][]byte, error) {
 	var allPageBodies [][]byte
 	var c *http.Client
 
@@ -56,7 +58,7 @@ func (f *defaultFetcher) Fetch(paginate PaginationFunc, url string) ([][]byte, e
 			return nil, loopErr
 		}
 
-		loopBody, nextPageLink, loopErr = paginate(loopResp)
+		loopBody, nextPageLink, loopErr = f.paginate(loopResp)
 		if loopErr != nil {
 			return nil, loopErr
 		}
