@@ -9,6 +9,8 @@ import (
 	"github.com/calebamiles/github-client/client/paginator"
 )
 
+var _ fetcher.Fetcher = &DefaultFetcher{}
+
 const (
 	authorizationHeader = "Authorization"
 )

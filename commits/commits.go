@@ -8,7 +8,7 @@ import (
 	"github.com/calebamiles/github-client/handle"
 )
 
-// A commit is a composition of a basic commit with comments added
+// A Commit represents basic information about a commit including comments
 type Commit interface {
 	CommitWithoutComments
 	Comments() []comments.Comment
@@ -24,7 +24,7 @@ type CommitWithoutComments interface {
 	String() string
 }
 
-// New returns a list of Commits from raw JSON
+// New returns a list of CommitWithoutComments from raw JSON
 func New(rawJSON []byte) ([]CommitWithoutComments, error) {
 	var commits []CommitWithoutComments
 	cs := []*githubCommit{}

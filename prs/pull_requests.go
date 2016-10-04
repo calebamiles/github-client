@@ -13,11 +13,13 @@ import (
 	"github.com/calebamiles/github-client/state"
 )
 
+// A PullRequest contains basic information about a GitHub pull request, including comments
 type PullRequest interface {
 	PullRequestWithoutComments
 	Comments() []comments.Comment
 }
 
+// A PullRequestWithoutComments contains basic information about a GitHub pull request
 type PullRequestWithoutComments interface {
 	ID() string
 	Author() string
@@ -34,6 +36,7 @@ type PullRequestWithoutComments interface {
 	String() string
 }
 
+// New returns a slice of PullRequestWithoutComments from raw JSON
 func New(rawJSON []byte) ([]PullRequestWithoutComments, error) {
 	var pulls []PullRequestWithoutComments
 	ps := []*pullrequest{}

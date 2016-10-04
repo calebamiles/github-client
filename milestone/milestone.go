@@ -8,6 +8,7 @@ import (
 	"github.com/calebamiles/github-client/state"
 )
 
+// A Milestone provides basic information about a GitHub milestone
 type Milestone interface {
 	Open() bool
 	Description() string
@@ -18,6 +19,7 @@ type Milestone interface {
 	String() string
 }
 
+// New returns a Milestone from raw JSON
 func New(rawJSON []byte) (Milestone, error) {
 	m := milestone{}
 

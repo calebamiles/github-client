@@ -5,7 +5,11 @@ import (
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/calebamiles/github-client/client/paginator"
 )
+
+var _ paginator.PaginationFunc = PaginateGitHubResponse
 
 const (
 	gitHubPaginationHeader = "Link"

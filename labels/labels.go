@@ -2,6 +2,12 @@ package labels
 
 import "encoding/json"
 
+// A Label provides basic information about a GitHub label
+type Label interface {
+	Name() string
+}
+
+// New returns a slice of Label from raw JSON
 func New(rawJSON []byte) ([]Label, error) {
 	ls := []Label{}
 
@@ -22,10 +28,6 @@ func New(rawJSON []byte) ([]Label, error) {
 	}
 
 	return ls, nil
-}
-
-type Label interface {
-	Name() string
 }
 
 type label struct {

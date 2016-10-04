@@ -5,15 +5,13 @@ import (
 	"time"
 )
 
-var _ Comment = &comment{}
-
 // A Comment represents a comment made on an Issue or Pull Request
 type Comment interface {
 	Author() string
 	Body() string
 }
 
-// New returns a list of comments from raw JSON
+// New returns a list of Comment from raw JSON
 func New(rawJSON []byte) ([]Comment, error) {
 	var comments []Comment
 	cs := []*comment{}
