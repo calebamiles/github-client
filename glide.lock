@@ -1,0 +1,42 @@
+hash: 2d32086d3a90d4a956b941c1e4a4f69c4307f1cbc2f07625c6a7fda6b7de7daf
+updated: 2016-10-03T22:37:29.80916632-07:00
+imports:
+- name: github.com/onsi/ginkgo
+  version: 45a5f6ffb2a14e4f29698c16ae4c0a34018a8951
+  subpackages:
+  - config
+  - extensions/table
+  - internal/codelocation
+  - internal/containernode
+  - internal/failer
+  - internal/leafnodes
+  - internal/remote
+  - internal/spec
+  - internal/specrunner
+  - internal/suite
+  - internal/testingtproxy
+  - internal/writer
+  - reporters
+  - reporters/stenographer
+  - types
+- name: github.com/onsi/gomega
+  version: d59fa0ac68bb5dd932ee8d24eed631cdd519efc3
+  subpackages:
+  - format
+  - internal/assertion
+  - internal/asyncassertion
+  - internal/oraclematcher
+  - internal/testingtsupport
+  - matchers
+  - matchers/support/goraph/bipartitegraph
+  - matchers/support/goraph/edge
+  - matchers/support/goraph/node
+  - matchers/support/goraph/util
+  - types
+- name: gopkg.in/yaml.v2
+  version: a5b47d31c556af34a302ce5d659e6fea44d90de0
+testImports:
+- name: golang.org/x/sys
+  version: 8f0908ab3b2457e2e15403d3697c9ef5cb4b57a9
+  subpackages:
+  - unix
