@@ -3,8 +3,6 @@ package comments
 import (
 	"encoding/json"
 	"time"
-
-	"github.com/calebamiles/github-client/author"
 )
 
 var _ Comment = &comment{}
@@ -16,7 +14,7 @@ type Comment interface {
 }
 
 // New returns a list of comments from raw JSON
-func New(rawJSON json.RawMessage) ([]Comment, error) {
+func New(rawJSON []byte) ([]Comment, error) {
 	var comments []Comment
 	cs := []*comment{}
 
@@ -37,7 +35,6 @@ type comment struct {
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
 	commentAuthor `json:"user"`
-	author        author.Author
 }
 
 func (c *comment) Author() string { return c.commentAuthor.GithubID }

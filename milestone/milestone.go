@@ -2,7 +2,10 @@ package milestone
 
 import (
 	"encoding/json"
+	"strings"
 	"time"
+
+	"github.com/calebamiles/github-client/state"
 )
 
 type Milestone interface {
@@ -15,45 +18,38 @@ type Milestone interface {
 	String() string
 }
 
-func New(rawJSON json.RawMessage) (Milestone, error) {
-	m := &milestone{}
+func New(rawJSON []byte) (Milestone, error) {
+	m := milestone{}
+
+	if len(rawJSON) == 0 {
+		return &m, nil
+	}
 
 	err := json.Unmarshal(rawJSON, &m)
 	if err != nil {
 		return nil, err
 	}
 
-	return m, nil
+	return &m, nil
 }
-
-var foo = `
-"url": "https://api.github.com/repos/octocat/Hello-World/milestones/1",
-		 "html_url": "https://github.com/octocat/Hello-World/milestones/v1.0",
-		 "labels_url": "https://api.github.com/repos/octocat/Hello-World/milestones/1/labels",
-		 "id": 1002604,
-		 "number": 1,
-		 "state": "open",
-		 "title": "v1.0",
-		 "description": "Tracking milestone for version 1.0",
-		 "open_issues": 4,
-		 "closed_issues": 8,
-		 "created_at": "2011-04-10T20:09:31Z",
-		 "updated_at": "2014-03-03T18:58:10Z",
-		 "closed_at": "2013-02-12T13:22:01Z",
-		 "due_on": "2012-10-09T23:39:01Z"
-
-
-`
 
 type milestone struct {
-	IDString           string    `json:"id"`
-	TitleString        string    `json:"title"`
-	StateString        string    `json:"state"`
-	DescriptionString  string    `json:"description"`
-	OpenIssuesString   string    `json:"open_issues"`
-	ClosedIssuesString string    `json:"closed_issues"`
-	DueOn              time.Time `json:"due_on"`
-	deadline           time.Time
-	openIssues         int
-	closedIssues       int
+	IDInt             int       `json:"id"`
+	TitleString       string    `json:"title"`
+	StateString       string    `json:"state"`
+	DescriptionString string    `json:"description"`
+	OpenIssuesInt     int       `json:"open_issues"`
+	ClosedIssuesInt   int       `json:"closed_issues"`
+	DueOn             time.Time `json:"due_on"`
+	deadline          time.Time
+	openIssues        int
+	closedIssues      int
 }
+
+func (m *milestone) Open() bool          { return strings.EqualFold(m.StateString, state.Open) }
+func (m *milestone) Description() string { return m.DescriptionString }
+func (m *milestone) IssuesOpen() int     { return m.OpenIssuesInt }
+func (m *milestone) IssuesClosed() int   { return m.ClosedIssuesInt }
+func (m *milestone) Deadline() time.Time { return m.DueOn }
+func (m *milestone) Title() string       { return m.TitleString }
+func (m *milestone) String() string      { return m.TitleString }

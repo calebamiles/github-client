@@ -3,20 +3,30 @@ package commits
 import (
 	"encoding/json"
 	"time"
+
+	"github.com/calebamiles/github-client/comments"
+	"github.com/calebamiles/github-client/handle"
 )
 
-// A Commit provides interesting information relating to a commit
+// A commit is a composition of a basic commit with comments added
 type Commit interface {
+	CommitWithoutComments
+	Comments() []comments.Comment
+}
+
+// A CommitWithoutComments provides basic information relating to a commit
+type CommitWithoutComments interface {
 	Author() Author
 	Date() time.Time
 	SHA() string
 	ParentSHAs() []string
+	CommentsURL() string
 	String() string
 }
 
 // New returns a list of Commits from raw JSON
-func New(rawJSON json.RawMessage) ([]Commit, error) {
-	var commits []Commit
+func New(rawJSON []byte) ([]CommitWithoutComments, error) {
+	var commits []CommitWithoutComments
 	cs := []*githubCommit{}
 
 	err := json.Unmarshal(rawJSON, &cs)
@@ -32,7 +42,7 @@ func New(rawJSON json.RawMessage) ([]Commit, error) {
 		commits = append(commits, cs[i])
 
 		cs[i].author = &author{
-			githubID: cs[i].githubAuthor.GithubID,
+			githubID: cs[i].GitHub.ID,
 			name:     cs[i].gitCommit.CommitterName,
 			email:    cs[i].gitCommit.CommitterEmail,
 		}
@@ -42,23 +52,21 @@ func New(rawJSON json.RawMessage) ([]Commit, error) {
 }
 
 type githubCommit struct {
-	CommitSHA    string `json:"sha"`
-	gitCommit    `json:"commit"`
-	githubAuthor `json:"author"`
-	Parents      []commitParent `json:"parents"`
-	author       Author
-	parentSHAs   []string
+	CommitSHA         string `json:"sha"`
+	gitCommit         `json:"commit"`
+	handle.GitHub     `json:"author"`
+	FetchCommentsFrom string         `json:"comments_url"`
+	Parents           []commitParent `json:"parents"`
+	author            Author
+	parentSHAs        []string
 }
 
 func (c *githubCommit) String() string       { return c.CommitSHA }
 func (c *githubCommit) Author() Author       { return c.author }
 func (c *githubCommit) Date() time.Time      { return c.CommitDate }
 func (c *githubCommit) SHA() string          { return c.CommitSHA }
+func (c *githubCommit) CommentsURL() string  { return c.FetchCommentsFrom }
 func (c *githubCommit) ParentSHAs() []string { return c.parentSHAs }
-
-type githubAuthor struct {
-	GithubID string `json:"login"`
-}
 
 type commitAuthor struct {
 	CommitterName  string    `json:"name"`

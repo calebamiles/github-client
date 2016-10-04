@@ -1,12 +1,29 @@
 package commits_test
 
 import (
-	"encoding/json"
-
 	"github.com/calebamiles/github-client/commits"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
+
+var _ = Describe("building commits from JSON", func() {
+	Describe("New", func() {
+		It("returns a slice of basic commits from JSON", func() {
+			rawJSON := []byte(commitsStub)
+			cs, err := commits.New(rawJSON)
+			Expect(err).ToNot(HaveOccurred())
+
+			Expect(cs).To(HaveLen(1))
+
+			Expect(cs[0].SHA()).To(Equal("20e764ab5d4b64e39f16a6bb441b52563757e156"))
+			Expect(cs[0].ParentSHAs()).To(ConsistOf("b840a837c5dc01007d6771a3b349975562124c48", "edcf97db1dfeafe973f7e2ad203957b07f69b198"))
+			Expect(cs[0].CommentsURL()).To(Equal("https://api.github.com/repos/kubernetes/kubernetes/commits/20e764ab5d4b64e39f16a6bb441b52563757e156/comments"))
+			Expect(cs[0].Author().GitHubID()).To(Equal("k8s-merge-robot"))
+			Expect(cs[0].Author().Email()).To(Equal("k8s-merge-robot@users.noreply.github.com"))
+			Expect(cs[0].Author().Name()).To(Equal("Kubernetes Submit Queue"))
+		})
+	})
+})
 
 const commitsStub = `
 [
@@ -87,21 +104,3 @@ const commitsStub = `
   }
 ]
 `
-
-var _ = Describe("building commits from JSON", func() {
-	Describe("New", func() {
-		It("returns a slice of commits from JSON", func() {
-			rawJSON := json.RawMessage(commitsStub)
-			cs, err := commits.New(rawJSON)
-			Expect(err).ToNot(HaveOccurred())
-
-			Expect(cs).To(HaveLen(1))
-
-			Expect(cs[0].SHA()).To(Equal("20e764ab5d4b64e39f16a6bb441b52563757e156"))
-			Expect(cs[0].ParentSHAs()).To(ConsistOf("b840a837c5dc01007d6771a3b349975562124c48", "edcf97db1dfeafe973f7e2ad203957b07f69b198"))
-			Expect(cs[0].Author().GitHubID()).To(Equal("k8s-merge-robot"))
-			Expect(cs[0].Author().Email()).To(Equal("k8s-merge-robot@users.noreply.github.com"))
-			Expect(cs[0].Author().Name()).To(Equal("Kubernetes Submit Queue"))
-		})
-	})
-})

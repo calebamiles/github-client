@@ -1,8 +1,6 @@
 package comments_test
 
 import (
-	"encoding/json"
-
 	"github.com/calebamiles/github-client/comments"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -44,7 +42,7 @@ const commentsStub = `
 var _ = Describe("building comments from JSON", func() {
 	Describe("New", func() {
 		It("returns a slice of comments from JSON", func() {
-			rawJSON := json.RawMessage(commentsStub)
+			rawJSON := []byte(commentsStub)
 			cs, err := comments.New(rawJSON)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(cs).To(HaveLen(1))
