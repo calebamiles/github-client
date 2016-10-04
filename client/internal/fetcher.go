@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/calebamiles/github-client/client/fetcher"
+	"github.com/calebamiles/github-client/client/paginator"
 )
 
 const (
@@ -11,18 +14,9 @@ const (
 	authorizationHeader = "Authorization"
 )
 
-// A PaginationFunc processes an http response and returns the current
-// page and a link to the next page if it exists
-type PaginationFunc func(*http.Response) (currentPage []byte, nextPageURL string, dontShadowThis error)
-
-// A Fetcher uses a paginator to return all pages reachable from a base URL
-type Fetcher interface {
-	Fetch(string) ([][]byte, error)
-}
-
 // NewFetcher returns the default fetcher which understands how to use
 // an authorization header to authenticate HTTP requests
-func NewFetcher(accessToken string) Fetcher {
+func NewFetcher(accessToken string) fetcher.Fetcher {
 	return &defaultFetcher{
 		accessToken: accessToken,
 		paginate:    PaginateGitHubResponse,
@@ -31,7 +25,7 @@ func NewFetcher(accessToken string) Fetcher {
 
 type defaultFetcher struct {
 	accessToken string
-	paginate    PaginationFunc
+	paginate    paginator.PaginationFunc
 }
 
 func (f *defaultFetcher) Fetch(url string) ([][]byte, error) {
