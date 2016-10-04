@@ -10,25 +10,26 @@ import (
 )
 
 const (
-	httpsScheme         = "https"
 	authorizationHeader = "Authorization"
 )
 
 // NewFetcher returns the default fetcher which understands how to use
 // an authorization header to authenticate HTTP requests
 func NewFetcher(accessToken string) fetcher.Fetcher {
-	return &defaultFetcher{
+	return &DefaultFetcher{
 		accessToken: accessToken,
-		paginate:    PaginateGitHubResponse,
+		Paginate:    PaginateGitHubResponse,
 	}
 }
 
-type defaultFetcher struct {
+// DefaultFetcher uses a paginator to fetch all reachable pages from a base URL
+type DefaultFetcher struct {
 	accessToken string
-	paginate    paginator.PaginationFunc
+	Paginate    paginator.PaginationFunc
 }
 
-func (f *defaultFetcher) Fetch(url string) ([][]byte, error) {
+// Fetch fetches all pages reachable from url, according to the PaginationFunc
+func (f *DefaultFetcher) Fetch(url string) ([][]byte, error) {
 	var allPageBodies [][]byte
 	var c *http.Client
 
@@ -46,13 +47,13 @@ func (f *defaultFetcher) Fetch(url string) ([][]byte, error) {
 			return nil, loopErr
 		}
 
-		loopReq.Header.Set("Authorization", fmt.Sprintf("token %s", f.accessToken))
+		loopReq.Header.Set(authorizationHeader, fmt.Sprintf("token %s", f.accessToken))
 		loopResp, loopErr = c.Do(loopReq)
 		if loopErr != nil {
 			return nil, loopErr
 		}
 
-		loopBody, nextPageLink, loopErr = f.paginate(loopResp)
+		loopBody, nextPageLink, loopErr = f.Paginate(loopResp)
 		if loopErr != nil {
 			return nil, loopErr
 		}

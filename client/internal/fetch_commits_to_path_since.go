@@ -9,6 +9,7 @@ import (
 	"github.com/calebamiles/github-client/commits"
 )
 
+// FetchCommitsToPathSince returns commits with comments to a path, an empty string for path will return all commits
 func (c *DefaultClient) FetchCommitsToPathSince(path string, since time.Time) ([]commits.Commit, error) {
 	urlString := fmt.Sprintf("https://api.github.com/repos/%s/%s/commits", c.RepoOwner, c.RepoName)
 	u, err := url.Parse(urlString)

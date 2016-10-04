@@ -2,9 +2,26 @@ package comments_test
 
 import (
 	"github.com/calebamiles/github-client/comments"
+	"github.com/calebamiles/github-client/comments/commentsfakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
+
+// ensure our fakes can be used by consumers if desired
+var _ comments.Comment = &commentsfakes.FakeComment{}
+
+var _ = Describe("building comments from JSON", func() {
+	Describe("New", func() {
+		It("returns a slice of comments from JSON", func() {
+			rawJSON := []byte(commentsStub)
+			cs, err := comments.New(rawJSON)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(cs).To(HaveLen(1))
+			Expect(cs[0].Author()).To(Equal("k8s-ci-robot"))
+			Expect(cs[0].Body()).To(ContainSubstring("Jenkins Kubemark GCE e2e"))
+		})
+	})
+})
 
 const commentsStub = `
 [
@@ -38,16 +55,3 @@ const commentsStub = `
   }
 ]
 `
-
-var _ = Describe("building comments from JSON", func() {
-	Describe("New", func() {
-		It("returns a slice of comments from JSON", func() {
-			rawJSON := []byte(commentsStub)
-			cs, err := comments.New(rawJSON)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(cs).To(HaveLen(1))
-			Expect(cs[0].Author()).To(Equal("k8s-ci-robot"))
-			Expect(cs[0].Body()).To(ContainSubstring("Jenkins Kubemark GCE e2e"))
-		})
-	})
-})

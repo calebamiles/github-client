@@ -2,7 +2,6 @@
 package clientfakes
 
 import (
-	"net/url"
 	"sync"
 	"time"
 
@@ -41,10 +40,10 @@ type FakeClient struct {
 		result1 []prs.PullRequest
 		result2 error
 	}
-	FetchPagesStub        func(url.URL) ([][]byte, error)
+	FetchPagesStub        func(string) ([][]byte, error)
 	fetchPagesMutex       sync.RWMutex
 	fetchPagesArgsForCall []struct {
-		arg1 url.URL
+		arg1 string
 	}
 	fetchPagesReturns struct {
 		result1 [][]byte
@@ -157,10 +156,10 @@ func (fake *FakeClient) FetchPullRequestsSinceReturns(result1 []prs.PullRequest,
 	}{result1, result2}
 }
 
-func (fake *FakeClient) FetchPages(arg1 url.URL) ([][]byte, error) {
+func (fake *FakeClient) FetchPages(arg1 string) ([][]byte, error) {
 	fake.fetchPagesMutex.Lock()
 	fake.fetchPagesArgsForCall = append(fake.fetchPagesArgsForCall, struct {
-		arg1 url.URL
+		arg1 string
 	}{arg1})
 	fake.recordInvocation("FetchPages", []interface{}{arg1})
 	fake.fetchPagesMutex.Unlock()
@@ -177,7 +176,7 @@ func (fake *FakeClient) FetchPagesCallCount() int {
 	return len(fake.fetchPagesArgsForCall)
 }
 
-func (fake *FakeClient) FetchPagesArgsForCall(i int) url.URL {
+func (fake *FakeClient) FetchPagesArgsForCall(i int) string {
 	fake.fetchPagesMutex.RLock()
 	defer fake.fetchPagesMutex.RUnlock()
 	return fake.fetchPagesArgsForCall[i].arg1

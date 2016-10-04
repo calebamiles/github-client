@@ -5,9 +5,14 @@ import (
 	"time"
 
 	"github.com/calebamiles/github-client/issues"
+	"github.com/calebamiles/github-client/issues/issuesfakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
+
+// ensure our fakes can be used by consumers if desired
+var _ issues.Issue = &issuesfakes.FakeIssue{}
+var _ issues.IssueWithoutComments = &issuesfakes.FakeIssueWithoutComments{}
 
 var _ = Describe("building issues from JSON", func() {
 	It("builds a slice of basic issues from raw JSON", func() {
@@ -25,7 +30,7 @@ var _ = Describe("building issues from JSON", func() {
 
 		issue := is[0]
 
-		Expect(issue.Author()).To(Equal("madhusudancs"))
+		Expect(issue.OpenedBy()).To(Equal("madhusudancs"))
 		Expect(issue.Body()).To(ContainSubstring("As described here because the provider"))
 		Expect(issue.Milestone().Title()).To(Equal("v1.4"))
 		Expect(issue.Title()).To(Equal("New federation deployment mechanism exits with an error for non-GCP clusters."))

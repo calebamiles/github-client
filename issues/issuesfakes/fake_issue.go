@@ -18,10 +18,10 @@ type FakeIssue struct {
 	iDReturns     struct {
 		result1 string
 	}
-	AuthorStub        func() string
-	authorMutex       sync.RWMutex
-	authorArgsForCall []struct{}
-	authorReturns     struct {
+	OpenedByStub        func() string
+	openedByMutex       sync.RWMutex
+	openedByArgsForCall []struct{}
+	openedByReturns     struct {
 		result1 string
 	}
 	BodyStub        func() string
@@ -113,27 +113,27 @@ func (fake *FakeIssue) IDReturns(result1 string) {
 	}{result1}
 }
 
-func (fake *FakeIssue) Author() string {
-	fake.authorMutex.Lock()
-	fake.authorArgsForCall = append(fake.authorArgsForCall, struct{}{})
-	fake.recordInvocation("Author", []interface{}{})
-	fake.authorMutex.Unlock()
-	if fake.AuthorStub != nil {
-		return fake.AuthorStub()
+func (fake *FakeIssue) OpenedBy() string {
+	fake.openedByMutex.Lock()
+	fake.openedByArgsForCall = append(fake.openedByArgsForCall, struct{}{})
+	fake.recordInvocation("OpenedBy", []interface{}{})
+	fake.openedByMutex.Unlock()
+	if fake.OpenedByStub != nil {
+		return fake.OpenedByStub()
 	} else {
-		return fake.authorReturns.result1
+		return fake.openedByReturns.result1
 	}
 }
 
-func (fake *FakeIssue) AuthorCallCount() int {
-	fake.authorMutex.RLock()
-	defer fake.authorMutex.RUnlock()
-	return len(fake.authorArgsForCall)
+func (fake *FakeIssue) OpenedByCallCount() int {
+	fake.openedByMutex.RLock()
+	defer fake.openedByMutex.RUnlock()
+	return len(fake.openedByArgsForCall)
 }
 
-func (fake *FakeIssue) AuthorReturns(result1 string) {
-	fake.AuthorStub = nil
-	fake.authorReturns = struct {
+func (fake *FakeIssue) OpenedByReturns(result1 string) {
+	fake.OpenedByStub = nil
+	fake.openedByReturns = struct {
 		result1 string
 	}{result1}
 }
@@ -393,8 +393,8 @@ func (fake *FakeIssue) Invocations() map[string][][]interface{} {
 	defer fake.invocationsMutex.RUnlock()
 	fake.iDMutex.RLock()
 	defer fake.iDMutex.RUnlock()
-	fake.authorMutex.RLock()
-	defer fake.authorMutex.RUnlock()
+	fake.openedByMutex.RLock()
+	defer fake.openedByMutex.RUnlock()
 	fake.bodyMutex.RLock()
 	defer fake.bodyMutex.RUnlock()
 	fake.commentsURLMutex.RLock()

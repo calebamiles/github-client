@@ -2,9 +2,14 @@ package commits_test
 
 import (
 	"github.com/calebamiles/github-client/commits"
+	"github.com/calebamiles/github-client/commits/commitsfakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
+
+// ensure our fakes can be used by consumers if desired
+var _ commits.Commit = &commitsfakes.FakeCommit{}
+var _ commits.CommitWithoutComments = &commitsfakes.FakeCommitWithoutComments{}
 
 var _ = Describe("building commits from JSON", func() {
 	Describe("New", func() {

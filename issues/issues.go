@@ -19,10 +19,10 @@ type Issue interface {
 	Comments() []comments.Comment
 }
 
-// A BasicIssue represents an issue as returned by the GitHub API
+// An IssueWithoutComments represents an issue as returned by the GitHub API
 type IssueWithoutComments interface {
 	ID() string
-	Author() string
+	OpenedBy() string
 	Body() string
 	CommentsURL() string
 	Title() string
@@ -34,6 +34,7 @@ type IssueWithoutComments interface {
 	UpdatedAt() time.Time
 }
 
+// New returns a slice of issues without comments from raw JSON
 func New(rawJSON []byte) ([]IssueWithoutComments, error) {
 	var issues []IssueWithoutComments
 	is := []*issue{}
@@ -105,7 +106,7 @@ type issue struct {
 }
 
 func (i *issue) ID() string                     { return fmt.Sprintf("%d", i.IssueNumber) }
-func (i *issue) Author() string                 { return i.GitHub.ID }
+func (i *issue) OpenedBy() string               { return i.GitHub.ID }
 func (i *issue) Title() string                  { return i.IssueTitle }
 func (i *issue) Open() bool                     { return strings.EqualFold(i.StateString, state.Open) }
 func (i *issue) Labels() []labels.Label         { return i.labels }

@@ -1,54 +1,266 @@
-package prs_test
+package internal_test
 
-import (
-	"encoding/json"
-	"time"
+var commitsPagesStub = [][]byte{[]byte(commitsStub)}
 
-	"github.com/calebamiles/github-client/prs"
-	"github.com/calebamiles/github-client/prs/prsfakes"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-)
+const commitsStub = `
+[
+  {
+    "sha": "20e764ab5d4b64e39f16a6bb441b52563757e156",
+    "commit": {
+      "author": {
+        "name": "Kubernetes Submit Queue",
+        "email": "k8s-merge-robot@users.noreply.github.com",
+        "date": "2016-09-30T21:54:13Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2016-09-30T21:54:13Z"
+      },
+      "message": "Merge pull request #33848 from mtaufen/fix-configure-helper\n\nAutomatic merge from submit-queue\n\nCorrect env var name in configure-helper",
+      "tree": {
+        "sha": "3d482c44910474f26ad184d426c052dad3d5d8ec",
+        "url": "https://api.github.com/repos/kubernetes/kubernetes/git/trees/3d482c44910474f26ad184d426c052dad3d5d8ec"
+      },
+      "url": "https://api.github.com/repos/kubernetes/kubernetes/git/commits/20e764ab5d4b64e39f16a6bb441b52563757e156",
+      "comment_count": 0
+    },
+    "url": "https://api.github.com/repos/kubernetes/kubernetes/commits/20e764ab5d4b64e39f16a6bb441b52563757e156",
+    "html_url": "https://github.com/kubernetes/kubernetes/commit/20e764ab5d4b64e39f16a6bb441b52563757e156",
+    "comments_url": "https://api.github.com/repos/kubernetes/kubernetes/commits/20e764ab5d4b64e39f16a6bb441b52563757e156/comments",
+    "author": {
+      "login": "k8s-merge-robot",
+      "id": 13653959,
+      "avatar_url": "https://avatars.githubusercontent.com/u/13653959?v=3",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/k8s-merge-robot",
+      "html_url": "https://github.com/k8s-merge-robot",
+      "followers_url": "https://api.github.com/users/k8s-merge-robot/followers",
+      "following_url": "https://api.github.com/users/k8s-merge-robot/following{/other_user}",
+      "gists_url": "https://api.github.com/users/k8s-merge-robot/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/k8s-merge-robot/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/k8s-merge-robot/subscriptions",
+      "organizations_url": "https://api.github.com/users/k8s-merge-robot/orgs",
+      "repos_url": "https://api.github.com/users/k8s-merge-robot/repos",
+      "events_url": "https://api.github.com/users/k8s-merge-robot/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/k8s-merge-robot/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447,
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=3",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/web-flow",
+      "html_url": "https://github.com/web-flow",
+      "followers_url": "https://api.github.com/users/web-flow/followers",
+      "following_url": "https://api.github.com/users/web-flow/following{/other_user}",
+      "gists_url": "https://api.github.com/users/web-flow/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/web-flow/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/web-flow/subscriptions",
+      "organizations_url": "https://api.github.com/users/web-flow/orgs",
+      "repos_url": "https://api.github.com/users/web-flow/repos",
+      "events_url": "https://api.github.com/users/web-flow/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/web-flow/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "b840a837c5dc01007d6771a3b349975562124c48",
+        "url": "https://api.github.com/repos/kubernetes/kubernetes/commits/b840a837c5dc01007d6771a3b349975562124c48",
+        "html_url": "https://github.com/kubernetes/kubernetes/commit/b840a837c5dc01007d6771a3b349975562124c48"
+      },
+      {
+        "sha": "edcf97db1dfeafe973f7e2ad203957b07f69b198",
+        "url": "https://api.github.com/repos/kubernetes/kubernetes/commits/edcf97db1dfeafe973f7e2ad203957b07f69b198",
+        "html_url": "https://github.com/kubernetes/kubernetes/commit/edcf97db1dfeafe973f7e2ad203957b07f69b198"
+      }
+    ]
+  }
+]
+`
 
-// ensure our fakes can be used by consumers if desired
-var _ prs.PullRequest = &prsfakes.FakePullRequest{}
-var _ prs.PullRequestWithoutComments = &prsfakes.FakePullRequestWithoutComments{}
+var commentsPagesStub = [][]byte{[]byte(commentsStub)}
 
-var _ = Describe("building pull requests from JSON", func() {
-	Describe("New", func() {
-		It("builds a slice of BasicPullRequest from raw JSON", func() {
-			ts := []times{}
-			err := json.Unmarshal([]byte(pullsStub), &ts)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(ts).To(HaveLen(1))
-			t := ts[0]
+const commentsStub = `
+[
+  {
+    "url": "https://api.github.com/repos/kubernetes/kubernetes/issues/comments/250834951",
+    "html_url": "https://github.com/kubernetes/kubernetes/pull/33854#issuecomment-250834951",
+    "issue_url": "https://api.github.com/repos/kubernetes/kubernetes/issues/33854",
+    "id": 250834951,
+    "user": {
+      "login": "k8s-ci-robot",
+      "id": 20407524,
+      "avatar_url": "https://avatars.githubusercontent.com/u/20407524?v=3",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/k8s-ci-robot",
+      "html_url": "https://github.com/k8s-ci-robot",
+      "followers_url": "https://api.github.com/users/k8s-ci-robot/followers",
+      "following_url": "https://api.github.com/users/k8s-ci-robot/following{/other_user}",
+      "gists_url": "https://api.github.com/users/k8s-ci-robot/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/k8s-ci-robot/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/k8s-ci-robot/subscriptions",
+      "organizations_url": "https://api.github.com/users/k8s-ci-robot/orgs",
+      "repos_url": "https://api.github.com/users/k8s-ci-robot/repos",
+      "events_url": "https://api.github.com/users/k8s-ci-robot/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/k8s-ci-robot/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "created_at": "2016-09-30T19:43:21Z",
+    "updated_at": "2016-09-30T19:43:21Z",
+    "body": "Jenkins Kubemark GCE e2e [**failed**](https://k8s-gubernator.appspot.com/build/kubernetes-jenkins/pr-logs/pull/33854/kubernetes-pull-build-test-kubemark-e2e-gce/1953/) for commit 5cba1d98929ff5928a2bf2ea29a6edfdea2e9152. [Full PR test history](http://pr-test.k8s.io/33854). Please help us cut down flakes by linking to an [open flake issue](https://github.com/kubernetes/kubernetes/issues?q=is:issue+label:kind/flake+is:open) when you hit one in your PR."
+  }
+]
+`
 
-			pulls, err := prs.New([]byte(pullsStub))
-			Expect(err).ToNot(HaveOccurred())
-			Expect(pulls).To(HaveLen(1))
-			pr := pulls[0]
+var issuesPagesStub = [][]byte{[]byte(issuesStub)}
 
-			Expect(pr.Author()).To(Equal("dgoodwin"))
-			Expect(pr.Body()).To(ContainSubstring("Thanks for sending a pull request!"))
-			Expect(pr.CommentsURL()).To(Equal("https://api.github.com/repos/kubernetes/kubernetes/issues/33885/comments"))
-			Expect(pr.CreatedAt()).To(Equal(t.CreatedAt))
-			Expect(pr.UpdatedAt()).To(Equal(t.UpdatedAt))
-			Expect(pr.Merged()).To(BeFalse())
-			Expect(pr.Open()).To(BeTrue())
-			Expect(pr.Title()).To(Equal("kubeadm: Pre-pull images to limit time waiting for control plane."))
-			Expect(pr.Reviewers()).To(HaveLen(1))
-			Expect(pr.Reviewers()).To(ConsistOf("errordeveloper"))
-			Expect(pr.Milestone().Title()).To(BeEmpty())
-		})
-	})
-})
+const issuesStub = `
+[
+  {
+    "url": "https://api.github.com/repos/kubernetes/kubernetes/issues/33886",
+    "repository_url": "https://api.github.com/repos/kubernetes/kubernetes",
+    "labels_url": "https://api.github.com/repos/kubernetes/kubernetes/issues/33886/labels{/name}",
+    "comments_url": "https://api.github.com/repos/kubernetes/kubernetes/issues/33886/comments",
+    "events_url": "https://api.github.com/repos/kubernetes/kubernetes/issues/33886/events",
+    "html_url": "https://github.com/kubernetes/kubernetes/issues/33886",
+    "id": 180477743,
+    "number": 33886,
+    "title": "New federation deployment mechanism exits with an error for non-GCP clusters.",
+    "user": {
+      "login": "madhusudancs",
+      "id": 10183,
+      "avatar_url": "https://avatars.githubusercontent.com/u/10183?v=3",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/madhusudancs",
+      "html_url": "https://github.com/madhusudancs",
+      "followers_url": "https://api.github.com/users/madhusudancs/followers",
+      "following_url": "https://api.github.com/users/madhusudancs/following{/other_user}",
+      "gists_url": "https://api.github.com/users/madhusudancs/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/madhusudancs/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/madhusudancs/subscriptions",
+      "organizations_url": "https://api.github.com/users/madhusudancs/orgs",
+      "repos_url": "https://api.github.com/users/madhusudancs/repos",
+      "events_url": "https://api.github.com/users/madhusudancs/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/madhusudancs/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "labels": [
+      {
+        "url": "https://api.github.com/repos/kubernetes/kubernetes/labels/area/cluster-federation",
+        "name": "area/cluster-federation",
+        "color": "fad8c7"
+      },
+      {
+        "url": "https://api.github.com/repos/kubernetes/kubernetes/labels/component/controller-manager",
+        "name": "component/controller-manager",
+        "color": "0052cc"
+      },
+      {
+        "url": "https://api.github.com/repos/kubernetes/kubernetes/labels/priority/P1",
+        "name": "priority/P1",
+        "color": "eb6420"
+      },
+      {
+        "url": "https://api.github.com/repos/kubernetes/kubernetes/labels/team/ux",
+        "name": "team/ux",
+        "color": "d2b48c"
+      }
+    ],
+    "state": "open",
+    "locked": false,
+    "assignee": {
+      "login": "madhusudancs",
+      "id": 10183,
+      "avatar_url": "https://avatars.githubusercontent.com/u/10183?v=3",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/madhusudancs",
+      "html_url": "https://github.com/madhusudancs",
+      "followers_url": "https://api.github.com/users/madhusudancs/followers",
+      "following_url": "https://api.github.com/users/madhusudancs/following{/other_user}",
+      "gists_url": "https://api.github.com/users/madhusudancs/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/madhusudancs/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/madhusudancs/subscriptions",
+      "organizations_url": "https://api.github.com/users/madhusudancs/orgs",
+      "repos_url": "https://api.github.com/users/madhusudancs/repos",
+      "events_url": "https://api.github.com/users/madhusudancs/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/madhusudancs/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "assignees": [
+      {
+        "login": "madhusudancs",
+        "id": 10183,
+        "avatar_url": "https://avatars.githubusercontent.com/u/10183?v=3",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/madhusudancs",
+        "html_url": "https://github.com/madhusudancs",
+        "followers_url": "https://api.github.com/users/madhusudancs/followers",
+        "following_url": "https://api.github.com/users/madhusudancs/following{/other_user}",
+        "gists_url": "https://api.github.com/users/madhusudancs/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/madhusudancs/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/madhusudancs/subscriptions",
+        "organizations_url": "https://api.github.com/users/madhusudancs/orgs",
+        "repos_url": "https://api.github.com/users/madhusudancs/repos",
+        "events_url": "https://api.github.com/users/madhusudancs/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/madhusudancs/received_events",
+        "type": "User",
+        "site_admin": false
+      }
+    ],
+    "milestone": {
+      "url": "https://api.github.com/repos/kubernetes/kubernetes/milestones/22",
+      "html_url": "https://github.com/kubernetes/kubernetes/milestones/v1.4",
+      "labels_url": "https://api.github.com/repos/kubernetes/kubernetes/milestones/22/labels",
+      "id": 1777384,
+      "number": 22,
+      "title": "v1.4",
+      "description": "https://github.com/kubernetes/features/blob/master/release-1.4/Release-1.4.md",
+      "creator": {
+        "login": "bgrant0607",
+        "id": 7725777,
+        "avatar_url": "https://avatars.githubusercontent.com/u/7725777?v=3",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/bgrant0607",
+        "html_url": "https://github.com/bgrant0607",
+        "followers_url": "https://api.github.com/users/bgrant0607/followers",
+        "following_url": "https://api.github.com/users/bgrant0607/following{/other_user}",
+        "gists_url": "https://api.github.com/users/bgrant0607/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/bgrant0607/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/bgrant0607/subscriptions",
+        "organizations_url": "https://api.github.com/users/bgrant0607/orgs",
+        "repos_url": "https://api.github.com/users/bgrant0607/repos",
+        "events_url": "https://api.github.com/users/bgrant0607/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/bgrant0607/received_events",
+        "type": "User",
+        "site_admin": false
+      },
+      "open_issues": 54,
+      "closed_issues": 1048,
+      "state": "open",
+      "created_at": "2016-05-19T18:50:19Z",
+      "updated_at": "2016-10-01T20:16:58Z",
+      "due_on": "2016-09-20T00:00:00Z",
+      "closed_at": null
+    },
+    "comments": 1,
+    "created_at": "2016-10-01T20:16:57Z",
+    "updated_at": "2016-10-01T20:33:19Z",
+    "closed_at": null,
+    "body": "As described here because the provider isn't gce/gke. However, the deployment mechanism itself should work on all the providers. We shouldn't exit, but just branch out to kubeconfig check instead.\r\n\r\ncc @owenhaynes @kubernetes/sig-cluster-federation "
+  }
+]
+`
 
-type times struct {
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-}
+var pullRequestsPagesStub = [][]byte{[]byte(pullRequestsStub)}
 
-const pullsStub = `
+const pullRequestsStub = `
 [
 {
 	 "url": "https://api.github.com/repos/kubernetes/kubernetes/pulls/33885",
