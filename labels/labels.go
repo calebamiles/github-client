@@ -1,6 +1,9 @@
 package labels
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"log"
+)
 
 // A Label provides basic information about a GitHub label
 type Label interface {
@@ -20,6 +23,7 @@ func New(rawJSON []byte) ([]Label, error) {
 
 	err := json.Unmarshal(rawJSON, &labelsFromJSON)
 	if err != nil {
+		log.Printf("failed unmarshalling: \n %s\n", string(rawJSON))
 		return nil, err
 	}
 

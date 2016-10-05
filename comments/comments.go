@@ -2,6 +2,7 @@ package comments
 
 import (
 	"encoding/json"
+	"log"
 	"time"
 )
 
@@ -18,6 +19,7 @@ func New(rawJSON []byte) ([]Comment, error) {
 
 	err := json.Unmarshal(rawJSON, &cs)
 	if err != nil {
+		log.Printf("failed unmarshalling: \n %s\n", string(rawJSON))
 		return nil, err
 	}
 

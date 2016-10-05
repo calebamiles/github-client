@@ -3,6 +3,7 @@ package prs
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"strings"
 	"time"
 
@@ -43,6 +44,7 @@ func New(rawJSON []byte) ([]PullRequestWithoutComments, error) {
 
 	err := json.Unmarshal(rawJSON, &ps)
 	if err != nil {
+		log.Printf("failed unmarshalling: \n %s\n", string(rawJSON))
 		return nil, err
 	}
 

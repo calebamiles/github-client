@@ -3,6 +3,7 @@ package issues
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"strings"
 	"time"
 
@@ -41,6 +42,7 @@ func New(rawJSON []byte) ([]IssueWithoutComments, error) {
 
 	err := json.Unmarshal(rawJSON, &is)
 	if err != nil {
+		log.Printf("failed unmarshalling: \n %s\n", string(rawJSON))
 		return nil, err
 	}
 

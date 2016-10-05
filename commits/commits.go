@@ -2,6 +2,7 @@ package commits
 
 import (
 	"encoding/json"
+	"log"
 	"time"
 
 	"github.com/calebamiles/github-client/comments"
@@ -31,6 +32,7 @@ func New(rawJSON []byte) ([]CommitWithoutComments, error) {
 
 	err := json.Unmarshal(rawJSON, &cs)
 	if err != nil {
+		log.Printf("failed unmarshalling: \n %s\n", string(rawJSON))
 		return nil, err
 	}
 

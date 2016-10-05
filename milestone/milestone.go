@@ -2,6 +2,7 @@ package milestone
 
 import (
 	"encoding/json"
+	"log"
 	"strings"
 	"time"
 
@@ -29,6 +30,7 @@ func New(rawJSON []byte) (Milestone, error) {
 
 	err := json.Unmarshal(rawJSON, &m)
 	if err != nil {
+		log.Printf("failed unmarshalling: \n %s\n", string(rawJSON))
 		return nil, err
 	}
 
