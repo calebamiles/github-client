@@ -12,8 +12,7 @@ const (
 
 // DefaultClient is returned by client.New()
 type DefaultClient struct {
-	Fetcher     fetcher.Fetcher
-	AccessToken string
-	RepoOwner   string
-	RepoName    string
+	Fetcher   fetcher.Fetcher
+	RepoOwner string
+	RepoName  string
 }

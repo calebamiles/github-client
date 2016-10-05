@@ -20,8 +20,8 @@ type Client interface {
 // New returns a new github/client.Client that is ready for use
 func New(repoOwner string, repoName string, accessToken string) Client {
 	return &internal.DefaultClient{
-		AccessToken: accessToken,
-		RepoOwner:   repoOwner,
-		RepoName:    repoName,
+		RepoOwner: repoOwner,
+		RepoName:  repoName,
+		Fetcher:   internal.NewFetcher(accessToken),
 	}
 }

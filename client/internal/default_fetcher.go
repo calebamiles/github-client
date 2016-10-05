@@ -17,16 +17,16 @@ const (
 
 // NewFetcher returns the default fetcher which understands how to use
 // an authorization header to authenticate HTTP requests
-func NewFetcher(accessToken string) fetcher.Fetcher {
+func NewFetcher(AccessToken string) fetcher.Fetcher {
 	return &DefaultFetcher{
-		accessToken: accessToken,
+		AccessToken: AccessToken,
 		Paginate:    PaginateGitHubResponse,
 	}
 }
 
 // DefaultFetcher uses a paginator to fetch all reachable pages from a base URL
 type DefaultFetcher struct {
-	accessToken string
+	AccessToken string
 	Paginate    paginator.PaginationFunc
 }
 
@@ -49,7 +49,7 @@ func (f *DefaultFetcher) Fetch(url string) ([][]byte, error) {
 			return nil, loopErr
 		}
 
-		loopReq.Header.Set(authorizationHeader, fmt.Sprintf("token %s", f.accessToken))
+		loopReq.Header.Set(authorizationHeader, fmt.Sprintf("token %s", f.AccessToken))
 		loopResp, loopErr = c.Do(loopReq)
 		if loopErr != nil {
 			return nil, loopErr
