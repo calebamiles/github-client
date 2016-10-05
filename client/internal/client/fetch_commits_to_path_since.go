@@ -1,11 +1,11 @@
-package internal
+package client
 
 import (
 	"fmt"
 	"net/url"
+	"sync"
 	"time"
 
-	"github.com/calebamiles/github-client/comments"
 	"github.com/calebamiles/github-client/commits"
 )
 
@@ -34,7 +34,6 @@ func (c *DefaultClient) FetchCommitsToPathSince(path string, since time.Time) ([
 		return nil, err
 	}
 
-	var allCommits []commits.Commit
 	var commitsWithoutComments []commits.CommitWithoutComments
 	for i := range commitPages {
 		commitsOnPage, loopErr := commits.New(commitPages[i])
@@ -45,38 +44,20 @@ func (c *DefaultClient) FetchCommitsToPathSince(path string, since time.Time) ([
 		commitsWithoutComments = append(commitsWithoutComments, commitsOnPage...)
 	}
 
+	errs := &errorAccumulator{}
+	wg := &sync.WaitGroup{}
+	cs := &commitAccumulator{}
+	ready := make(chan struct{}, 50)
+
 	for i := range commitsWithoutComments {
-		commentsURL := commitsWithoutComments[i].CommentsURL()
-		var allComments []comments.Comment
-
-		commentsPages, loopErr := c.Fetcher.Fetch(commentsURL)
-		if loopErr != nil {
-			return nil, loopErr
-		}
-
-		for j := range commentsPages {
-			commentsOnPage, commentsLoopErr := comments.New(commentsPages[j])
-			if commentsLoopErr != nil {
-				return nil, commentsLoopErr
-			}
-
-			allComments = append(allComments, commentsOnPage...)
-		}
-
-		c := &commit{
-			CommitWithoutComments: commitsWithoutComments[i],
-			comments:              allComments,
-		}
-
-		allCommits = append(allCommits, c)
+		wg.Add(1)
+		go c.processCommits(commitsWithoutComments[i], cs, ready, wg, errs)
 	}
 
-	return allCommits, nil
-}
+	wg.Wait()
+	if !errs.IsNil() {
+		return nil, errs
+	}
 
-type commit struct {
-	commits.CommitWithoutComments
-	comments []comments.Comment
+	return cs.GetAll(), nil
 }
-
-func (c *commit) Comments() []comments.Comment { return c.comments }

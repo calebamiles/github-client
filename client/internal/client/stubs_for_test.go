@@ -1,4 +1,4 @@
-package internal_test
+package client_test
 
 var commitsPagesStub = [][]byte{[]byte(commitsStub)}
 

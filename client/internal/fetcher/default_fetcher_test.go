@@ -1,4 +1,4 @@
-package internal_test
+package fetcher_test
 
 import (
 	"encoding/json"
@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"sync/atomic"
 
-	"github.com/calebamiles/github-client/client/internal"
+	"github.com/calebamiles/github-client/client/internal/fetcher"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -26,7 +26,7 @@ var _ = Describe("DefaultFetcher", func() {
 		s := httptest.NewServer(handler)
 		defer s.Close()
 
-		fetcher := internal.DefaultFetcher{
+		fetcher := fetcher.DefaultFetcher{
 			Paginate: fakePaginator,
 		}
 

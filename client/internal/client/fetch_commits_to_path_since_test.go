@@ -1,4 +1,4 @@
-package internal_test
+package client_test
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/calebamiles/github-client/client/fetcher/fetcherfakes"
-	"github.com/calebamiles/github-client/client/internal"
+	"github.com/calebamiles/github-client/client/internal/client"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -24,7 +24,7 @@ var _ = Describe("FetchCommitsToPathSince", func() {
 			return commitsPagesStub, nil
 		}
 
-		c := &internal.DefaultClient{
+		c := &client.DefaultClient{
 			Fetcher: fetcher,
 		}
 
@@ -54,7 +54,7 @@ var _ = Describe("FetchCommitsToPathSince", func() {
 		fetcher := &fetcherfakes.FakeFetcher{}
 		fetcher.FetchReturns(nil, nil)
 
-		c := &internal.DefaultClient{
+		c := &client.DefaultClient{
 			Fetcher:   fetcher,
 			RepoName:  repoName,
 			RepoOwner: repoOwner,
@@ -68,9 +68,9 @@ var _ = Describe("FetchCommitsToPathSince", func() {
 		Expect(err).ToNot(HaveOccurred())
 
 		query := u.Query()
-		Expect(query.Get("per_page")).To(Equal(internal.NumberOfPagesToRequest))
+		Expect(query.Get("per_page")).To(Equal(client.NumberOfPagesToRequest))
 		Expect(query.Get("path")).To(Equal(testPath))
-		Expect(query.Get("since")).To(Equal(now.Format(internal.DateFormat)))
+		Expect(query.Get("since")).To(Equal(now.Format(client.DateFormat)))
 		Expect(u.Host).To(Equal("api.github.com"))
 		Expect(u.Path).To(Equal(expectedPath))
 	})
@@ -80,7 +80,7 @@ var _ = Describe("FetchCommitsToPathSince", func() {
 		fetcher := &fetcherfakes.FakeFetcher{}
 		fetcher.FetchReturns(nil, nil)
 
-		c := &internal.DefaultClient{
+		c := &client.DefaultClient{
 			Fetcher: fetcher,
 		}
 
@@ -103,7 +103,7 @@ var _ = Describe("FetchCommitsToPathSince", func() {
 		fetcher := &fetcherfakes.FakeFetcher{}
 		fetcher.FetchReturns(nil, nil)
 
-		c := &internal.DefaultClient{
+		c := &client.DefaultClient{
 			Fetcher: fetcher,
 		}
 

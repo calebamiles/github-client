@@ -1,4 +1,4 @@
-package internal
+package fetcher
 
 import (
 	"fmt"
@@ -6,7 +6,8 @@ import (
 	"time"
 
 	"github.com/calebamiles/github-client/client/fetcher"
-	"github.com/calebamiles/github-client/client/paginator"
+	"github.com/calebamiles/github-client/client/internal/paginator"
+	abstract "github.com/calebamiles/github-client/client/paginator"
 )
 
 var _ fetcher.Fetcher = &DefaultFetcher{}
@@ -20,14 +21,14 @@ const (
 func NewFetcher(AccessToken string) fetcher.Fetcher {
 	return &DefaultFetcher{
 		AccessToken: AccessToken,
-		Paginate:    PaginateGitHubResponse,
+		Paginate:    paginator.PaginateGitHubResponse,
 	}
 }
 
 // DefaultFetcher uses a paginator to fetch all reachable pages from a base URL
 type DefaultFetcher struct {
 	AccessToken string
-	Paginate    paginator.PaginationFunc
+	Paginate    abstract.PaginationFunc
 }
 
 // Fetch fetches all pages reachable from url, according to the PaginationFunc
@@ -43,8 +44,8 @@ func (f *DefaultFetcher) Fetch(url string) ([][]byte, error) {
 	var loopBody []byte
 	var loopErr error
 
-	for nextPageLink = url; nextPageLink != ""; {
-		loopReq, loopErr = http.NewRequest(http.MethodGet, nextPageLink, nil)
+	for currentLink := url; len(currentLink) > 0; currentLink = nextPageLink {
+		loopReq, loopErr = http.NewRequest(http.MethodGet, currentLink, nil)
 		if loopErr != nil {
 			return nil, loopErr
 		}
@@ -56,6 +57,11 @@ func (f *DefaultFetcher) Fetch(url string) ([][]byte, error) {
 		}
 
 		loopBody, nextPageLink, loopErr = f.Paginate(loopResp)
+		if loopErr != nil {
+			return nil, loopErr
+		}
+
+		loopErr = loopResp.Body.Close()
 		if loopErr != nil {
 			return nil, loopErr
 		}

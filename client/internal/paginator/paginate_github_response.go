@@ -1,4 +1,4 @@
-package internal
+package paginator
 
 import (
 	"io/ioutil"
@@ -36,6 +36,6 @@ func PaginateGitHubResponse(resp *http.Response) ([]byte, string, error) {
 		return nil, "", err
 	}
 
-	log.Printf("processed a page, next page at: %s", nextPageLink)
+	log.Printf("processed a page %s, next page at: %s", resp.Request.URL.String(), nextPageLink)
 	return bodyBytes, nextPageLink, nil
 }

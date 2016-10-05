@@ -1,4 +1,4 @@
-package internal_test
+package client_test
 
 import (
 	"fmt"
@@ -7,13 +7,13 @@ import (
 	"time"
 
 	"github.com/calebamiles/github-client/client/fetcher/fetcherfakes"
-	"github.com/calebamiles/github-client/client/internal"
+	"github.com/calebamiles/github-client/client/internal/client"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("FetchIssuesSince", func() {
-	It("returns a slice of issues with comments", func() {
+var _ = Describe("FetchPullRequestsSince", func() {
+	It("returns a slice of PullRequests with comments", func() {
 		now := time.Now()
 		fetcher := &fetcherfakes.FakeFetcher{}
 		fetcher.FetchStub = func(urlString string) ([][]byte, error) {
@@ -21,21 +21,21 @@ var _ = Describe("FetchIssuesSince", func() {
 				return commentsPagesStub, nil
 			}
 
-			return issuesPagesStub, nil
+			return pullRequestsPagesStub, nil
 		}
 
-		c := &internal.DefaultClient{
+		c := &client.DefaultClient{
 			Fetcher: fetcher,
 		}
 
-		issues, err := c.FetchIssuesSince(now)
+		pullRequests, err := c.FetchPullRequestsSince(now)
 		Expect(err).ToNot(HaveOccurred())
-		Expect(issues).To(HaveLen(1))
+		Expect(pullRequests).To(HaveLen(1))
 
-		issue := issues[0]
-		Expect(issue.OpenedBy()).To(Equal("madhusudancs"))
+		pullRequest := pullRequests[0]
+		Expect(pullRequest.Author()).To(Equal("dgoodwin"))
 
-		comments := issue.Comments()
+		comments := pullRequest.Comments()
 		Expect(comments).To(HaveLen(1))
 
 		comment := comments[0]
@@ -48,18 +48,18 @@ var _ = Describe("FetchIssuesSince", func() {
 		repoOwner := "test-repo-owner"
 		now := time.Now()
 
-		expectedPath := fmt.Sprintf("/repos/%s/%s/issues", repoOwner, repoName)
+		expectedPath := fmt.Sprintf("/repos/%s/%s/pullRequests", repoOwner, repoName)
 
 		fetcher := &fetcherfakes.FakeFetcher{}
 		fetcher.FetchReturns(nil, nil)
 
-		c := &internal.DefaultClient{
+		c := &client.DefaultClient{
 			Fetcher:   fetcher,
 			RepoName:  repoName,
 			RepoOwner: repoOwner,
 		}
 
-		_, err := c.FetchIssuesSince(now)
+		_, err := c.FetchPullRequestsSince(now)
 		Expect(err).ToNot(HaveOccurred())
 
 		urlString := fetcher.FetchArgsForCall(0)
@@ -67,8 +67,8 @@ var _ = Describe("FetchIssuesSince", func() {
 		Expect(err).ToNot(HaveOccurred())
 
 		query := u.Query()
-		Expect(query.Get("per_page")).To(Equal(internal.NumberOfPagesToRequest))
-		Expect(query.Get("since")).To(Equal(now.Format(internal.DateFormat)))
+		Expect(query.Get("per_page")).To(Equal(client.NumberOfPagesToRequest))
+		Expect(query.Get("since")).To(Equal(now.Format(client.DateFormat)))
 		Expect(u.Host).To(Equal("api.github.com"))
 		Expect(u.Path).To(Equal(expectedPath))
 	})
@@ -78,11 +78,11 @@ var _ = Describe("FetchIssuesSince", func() {
 		fetcher := &fetcherfakes.FakeFetcher{}
 		fetcher.FetchReturns(nil, nil)
 
-		c := &internal.DefaultClient{
+		c := &client.DefaultClient{
 			Fetcher: fetcher,
 		}
 
-		_, err := c.FetchIssuesSince(emptyTime)
+		_, err := c.FetchPullRequestsSince(emptyTime)
 		Expect(err).ToNot(HaveOccurred())
 
 		urlString := fetcher.FetchArgsForCall(0)
