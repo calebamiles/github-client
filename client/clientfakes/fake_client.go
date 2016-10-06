@@ -22,6 +22,16 @@ type FakeClient struct {
 		result1 []commits.Commit
 		result2 error
 	}
+	FetchCommitsWithCommentsToPathSinceStub        func(string, time.Time) ([]commits.Commit, error)
+	fetchCommitsWithCommentsToPathSinceMutex       sync.RWMutex
+	fetchCommitsWithCommentsToPathSinceArgsForCall []struct {
+		arg1 string
+		arg2 time.Time
+	}
+	fetchCommitsWithCommentsToPathSinceReturns struct {
+		result1 []commits.Commit
+		result2 error
+	}
 	FetchIssuesSinceStub        func(time.Time) ([]issues.Issue, error)
 	fetchIssuesSinceMutex       sync.RWMutex
 	fetchIssuesSinceArgsForCall []struct {
@@ -83,6 +93,41 @@ func (fake *FakeClient) FetchCommitsToPathSinceArgsForCall(i int) (string, time.
 func (fake *FakeClient) FetchCommitsToPathSinceReturns(result1 []commits.Commit, result2 error) {
 	fake.FetchCommitsToPathSinceStub = nil
 	fake.fetchCommitsToPathSinceReturns = struct {
+		result1 []commits.Commit
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeClient) FetchCommitsWithCommentsToPathSince(arg1 string, arg2 time.Time) ([]commits.Commit, error) {
+	fake.fetchCommitsWithCommentsToPathSinceMutex.Lock()
+	fake.fetchCommitsWithCommentsToPathSinceArgsForCall = append(fake.fetchCommitsWithCommentsToPathSinceArgsForCall, struct {
+		arg1 string
+		arg2 time.Time
+	}{arg1, arg2})
+	fake.recordInvocation("FetchCommitsWithCommentsToPathSince", []interface{}{arg1, arg2})
+	fake.fetchCommitsWithCommentsToPathSinceMutex.Unlock()
+	if fake.FetchCommitsWithCommentsToPathSinceStub != nil {
+		return fake.FetchCommitsWithCommentsToPathSinceStub(arg1, arg2)
+	} else {
+		return fake.fetchCommitsWithCommentsToPathSinceReturns.result1, fake.fetchCommitsWithCommentsToPathSinceReturns.result2
+	}
+}
+
+func (fake *FakeClient) FetchCommitsWithCommentsToPathSinceCallCount() int {
+	fake.fetchCommitsWithCommentsToPathSinceMutex.RLock()
+	defer fake.fetchCommitsWithCommentsToPathSinceMutex.RUnlock()
+	return len(fake.fetchCommitsWithCommentsToPathSinceArgsForCall)
+}
+
+func (fake *FakeClient) FetchCommitsWithCommentsToPathSinceArgsForCall(i int) (string, time.Time) {
+	fake.fetchCommitsWithCommentsToPathSinceMutex.RLock()
+	defer fake.fetchCommitsWithCommentsToPathSinceMutex.RUnlock()
+	return fake.fetchCommitsWithCommentsToPathSinceArgsForCall[i].arg1, fake.fetchCommitsWithCommentsToPathSinceArgsForCall[i].arg2
+}
+
+func (fake *FakeClient) FetchCommitsWithCommentsToPathSinceReturns(result1 []commits.Commit, result2 error) {
+	fake.FetchCommitsWithCommentsToPathSinceStub = nil
+	fake.fetchCommitsWithCommentsToPathSinceReturns = struct {
 		result1 []commits.Commit
 		result2 error
 	}{result1, result2}
@@ -195,6 +240,8 @@ func (fake *FakeClient) Invocations() map[string][][]interface{} {
 	defer fake.invocationsMutex.RUnlock()
 	fake.fetchCommitsToPathSinceMutex.RLock()
 	defer fake.fetchCommitsToPathSinceMutex.RUnlock()
+	fake.fetchCommitsWithCommentsToPathSinceMutex.RLock()
+	defer fake.fetchCommitsWithCommentsToPathSinceMutex.RUnlock()
 	fake.fetchIssuesSinceMutex.RLock()
 	defer fake.fetchIssuesSinceMutex.RUnlock()
 	fake.fetchPullRequestsSinceMutex.RLock()

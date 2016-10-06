@@ -12,8 +12,39 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("FetchCommitsToPathSince", func() {
+var _ = Describe("FetchCommitsWithCommentsToPathSince", func() {
 	It("returns a slice of commits with comments", func() {
+		now := time.Now()
+		fetcher := &fetcherfakes.FakeFetcher{}
+		fetcher.FetchStub = func(urlString string) ([][]byte, error) {
+			if strings.HasSuffix(urlString, "comments") {
+				return commentsPagesStub, nil
+			}
+
+			return commitsPagesStub, nil
+		}
+
+		c := &client.DefaultClient{
+			Fetcher: fetcher,
+		}
+
+		commits, err := c.FetchCommitsWithCommentsToPathSince("", now)
+		Expect(err).ToNot(HaveOccurred())
+		Expect(commits).To(HaveLen(1))
+
+		commit := commits[0]
+		Expect(commit.Author().GitHubID()).To(Equal("k8s-merge-robot"))
+
+		comments := commit.Comments()
+		Expect(comments).To(HaveLen(1))
+
+		comment := comments[0]
+		Expect(comment.Author()).To(Equal("k8s-ci-robot"))
+	})
+})
+
+var _ = Describe("FetchCommitsToPathSince", func() {
+	It("returns a slice of commits without comments", func() {
 		now := time.Now()
 		fetcher := &fetcherfakes.FakeFetcher{}
 		fetcher.FetchStub = func(urlString string) ([][]byte, error) {
@@ -36,13 +67,11 @@ var _ = Describe("FetchCommitsToPathSince", func() {
 		Expect(commit.Author().GitHubID()).To(Equal("k8s-merge-robot"))
 
 		comments := commit.Comments()
-		Expect(comments).To(HaveLen(1))
-
-		comment := comments[0]
-		Expect(comment.Author()).To(Equal("k8s-ci-robot"))
-
+		Expect(comments).To(BeEmpty())
 	})
+})
 
+var _ = Describe("shared behavior", func() {
 	It("passes the correct URL to the fetcher", func() {
 		repoName := "test-repo-name"
 		repoOwner := "test-repo-owner"

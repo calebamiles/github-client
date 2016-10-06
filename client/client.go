@@ -13,6 +13,7 @@ import (
 // A Client handles basic read only operations against the GitHub API
 type Client interface {
 	FetchCommitsToPathSince(string, time.Time) ([]commits.Commit, error)
+	FetchCommitsWithCommentsToPathSince(string, time.Time) ([]commits.Commit, error)
 	FetchIssuesSince(time.Time) ([]issues.Issue, error)
 	FetchPullRequestsSince(time.Time) ([]prs.PullRequest, error)
 	FetchPages(string) ([][]byte, error)
