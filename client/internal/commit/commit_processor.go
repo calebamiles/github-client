@@ -57,18 +57,21 @@ func (p *Processor) AddEmptyComments(in []commits.CommitWithoutComments) ([]comm
 }
 
 func processCommits(commitWithoutComments commits.CommitWithoutComments, f fetcher.Fetcher, cs *Accumulator, ready chan struct{}, wg *sync.WaitGroup, errs *errorAccumulator) {
-	defer wg.Done()
 	ready <- struct{}{}
+	defer wg.Done()
 	defer func(readyChan chan struct{}) { <-readyChan }(ready)
 
-	var allComments []comments.Comment
+	if !errs.IsNil() {
+		return
+	}
 
 	commentsPages, err := f.Fetch(commitWithoutComments.CommentsURL())
 	if err != nil {
 		errs.Add(err)
 		return
-	}
 
+	}
+	var allComments []comments.Comment
 	for j := range commentsPages {
 		commentsOnPage, commentsLoopErr := comments.New(commentsPages[j])
 		if commentsLoopErr != nil {
