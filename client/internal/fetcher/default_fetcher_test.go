@@ -52,6 +52,24 @@ var _ = Describe("DefaultFetcher", func() {
 		Expect(firstPage.Content).To(Equal("there have been: 1 requests"))
 		Expect(secondPage.Content).To(Equal("there have been: 2 requests"))
 	})
+
+	It("returns an error for non 200 status", func() {
+		handler := httpStatus(http.StatusTooManyRequests)
+
+		s := httptest.NewServer(handler)
+		defer s.Close()
+
+		fetcher := fetcher.DefaultFetcher{
+			Paginate: fakePaginator,
+		}
+
+		serverURL, err := url.Parse(s.URL)
+		Expect(err).ToNot(HaveOccurred())
+
+		_, err = fetcher.Fetch(serverURL.String())
+		Expect(err).To(HaveOccurred())
+		Expect(err.Error()).To(ContainSubstring("got unexpected status code: 429"))
+	})
 })
 
 const (
@@ -108,4 +126,10 @@ func fakePaginator(r *http.Response) ([]byte, string, error) {
 	}
 
 	return body, nextPageURL, nil
+}
+
+type httpStatus int
+
+func (s httpStatus) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	w.WriteHeader(int(s))
 }

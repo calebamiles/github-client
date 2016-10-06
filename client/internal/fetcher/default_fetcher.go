@@ -56,6 +56,10 @@ func (f *DefaultFetcher) Fetch(url string) ([][]byte, error) {
 			return nil, loopErr
 		}
 
+		if loopResp.StatusCode != http.StatusOK {
+			return nil, fmt.Errorf("got unexpected status code: %d, desired 200", loopResp.StatusCode)
+		}
+
 		loopBody, nextPageLink, loopErr = f.Paginate(loopResp)
 		if loopErr != nil {
 			return nil, loopErr
