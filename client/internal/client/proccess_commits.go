@@ -10,7 +10,7 @@ import (
 func (c *DefaultClient) processCommits(commitWithoutComments commits.CommitWithoutComments, cs *commitAccumulator, ready chan struct{}, wg *sync.WaitGroup, errs *errorAccumulator) {
 	defer wg.Done()
 	ready <- struct{}{}
-	defer func() { <-ready }()
+	defer func(readyChan chan struct{}) { <-readyChan }(ready)
 
 	var allComments []comments.Comment
 
