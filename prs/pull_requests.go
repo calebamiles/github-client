@@ -7,26 +7,18 @@ import (
 	"strings"
 	"time"
 
-	"github.com/calebamiles/github-client/comments"
 	"github.com/calebamiles/github-client/handle"
 	"github.com/calebamiles/github-client/labels"
 	"github.com/calebamiles/github-client/milestone"
 	"github.com/calebamiles/github-client/state"
 )
 
-// A PullRequest contains basic information about a GitHub pull request, including comments
-type PullRequest interface {
-	PullRequestWithoutComments
-	Comments() []comments.Comment
-}
-
 // A PullRequestWithoutComments contains basic information about a GitHub pull request
-type PullRequestWithoutComments interface {
+type PullRequest interface {
 	ID() string
 	Author() string
 	Body() string
 	Title() string
-	CommentsURL() string
 	Open() bool
 	Merged() bool
 	Labels() []labels.Label
@@ -35,12 +27,19 @@ type PullRequestWithoutComments interface {
 	CreatedAt() time.Time
 	UpdatedAt() time.Time
 	String() string
+
+	//TODO add expensive methods for fetching richer objects here
+	NumberOfCommits() int
+	NumberOfAdditions() int
+	NumberOfDeletions() int
+	NumberOfChangedFiles() int
+	NumberOfComments() int
 }
 
 // New returns a slice of PullRequestWithoutComments from raw JSON
-func New(rawJSON []byte) ([]PullRequestWithoutComments, error) {
-	var pulls []PullRequestWithoutComments
-	ps := []*pullrequest{}
+func New(rawJSON []byte) ([]PullRequest, error) {
+	var pulls []PullRequest
+	ps := []*pullRequest{}
 
 	err := json.Unmarshal(rawJSON, &ps)
 	if err != nil {
@@ -82,35 +81,45 @@ func New(rawJSON []byte) ([]PullRequestWithoutComments, error) {
 	return pulls, nil
 }
 
-type pullrequest struct {
-	Number            int             `json:"number"`
-	State             string          `json:"state"`
-	TitleString       string          `json:"title"`
-	BodyString        string          `json:"body"`
-	CreatedTime       time.Time       `json:"created_at"`
-	UpdatedTime       time.Time       `json:"updated_at"`
-	MergeTime         *time.Time      `json:"merged_at"` // `null` unless merged so make this a pointer to a time
-	Assignee          handle.GitHub   `json:"assignee"`
-	AssigneeList      []handle.GitHub `json:"reviewers"`
-	CommentsURLString string          `json:"comments_url"`
-	MilestoneJSON     json.RawMessage `json:"milestone"`
-	handle.GitHub     `json:"user"`
+type pullRequest struct {
+	Number                   int             `json:"number"`
+	State                    string          `json:"state"`
+	TitleString              string          `json:"title"`
+	BodyString               string          `json:"body"`
+	NumberOfCommentsJSON     int             `json:"comments"`
+	NumberOfCommitsJSON      int             `json:"commits"`
+	NumberOfAdditionsJSON    int             `json:"additions"`
+	NumberOfDeletionsJSON    int             `json:"deletions"`
+	NumberOfChangedFilesJSON int             `json:"changed_files"`
+	CreatedTime              time.Time       `json:"created_at"`
+	UpdatedTime              time.Time       `json:"updated_at"`
+	MergeTime                *time.Time      `json:"merged_at"` // `null` unless merged so make this a pointer to a time
+	Assignee                 handle.GitHub   `json:"assignee"`
+	AssigneeList             []handle.GitHub `json:"reviewers"`
+	MilestoneJSON            json.RawMessage `json:"milestone"`
+	handle.GitHub            `json:"user"`
 
 	labels    []labels.Label
 	milestone milestone.Milestone
 	reviewers []string
 }
 
-func (p *pullrequest) ID() string                     { return fmt.Sprintf("%d", p.Number) }
-func (p *pullrequest) Author() string                 { return p.GitHub.ID }
-func (p *pullrequest) Body() string                   { return p.BodyString }
-func (p *pullrequest) Title() string                  { return p.TitleString }
-func (p *pullrequest) CommentsURL() string            { return p.CommentsURLString }
-func (p *pullrequest) Open() bool                     { return strings.EqualFold(p.State, state.Open) }
-func (p *pullrequest) Merged() bool                   { return !p.MergeTime.IsZero() }
-func (p *pullrequest) Labels() []labels.Label         { return p.labels }
-func (p *pullrequest) Milestone() milestone.Milestone { return p.milestone }
-func (p *pullrequest) Reviewers() []string            { return p.reviewers }
-func (p *pullrequest) CreatedAt() time.Time           { return p.CreatedTime }
-func (p *pullrequest) UpdatedAt() time.Time           { return p.UpdatedTime }
-func (p *pullrequest) String() string                 { return fmt.Sprintf("%d", p.Number) }
+func (p *pullRequest) ID() string                     { return fmt.Sprintf("%d", p.Number) }
+func (p *pullRequest) Author() string                 { return p.GitHub.ID }
+func (p *pullRequest) Body() string                   { return p.BodyString }
+func (p *pullRequest) Title() string                  { return p.TitleString }
+func (p *pullRequest) Open() bool                     { return strings.EqualFold(p.State, state.Open) }
+func (p *pullRequest) Merged() bool                   { return !p.MergeTime.IsZero() }
+func (p *pullRequest) Labels() []labels.Label         { return p.labels }
+func (p *pullRequest) Milestone() milestone.Milestone { return p.milestone }
+func (p *pullRequest) Reviewers() []string            { return p.reviewers }
+func (p *pullRequest) CreatedAt() time.Time           { return p.CreatedTime }
+func (p *pullRequest) UpdatedAt() time.Time           { return p.UpdatedTime }
+
+func (p *pullRequest) NumberOfComments() int     { return p.NumberOfCommentsJSON }
+func (p *pullRequest) NumberOfCommits() int      { return p.NumberOfCommitsJSON }
+func (p *pullRequest) NumberOfAdditions() int    { return p.NumberOfAdditionsJSON }
+func (p *pullRequest) NumberOfDeletions() int    { return p.NumberOfDeletionsJSON }
+func (p *pullRequest) NumberOfChangedFiles() int { return p.NumberOfChangedFilesJSON }
+
+func (p *pullRequest) String() string { return fmt.Sprintf("%d", p.Number) }

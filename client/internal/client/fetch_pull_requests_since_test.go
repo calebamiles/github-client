@@ -13,7 +13,7 @@ import (
 )
 
 var _ = Describe("FetchPullRequestsSince", func() {
-	It("returns a slice of PullRequests with comments", func() {
+	It("returns a slice of PullRequests", func() {
 		now := time.Now()
 		fetcher := &fetcherfakes.FakeFetcher{}
 		fetcher.FetchStub = func(urlString string) ([][]byte, error) {
@@ -34,13 +34,6 @@ var _ = Describe("FetchPullRequestsSince", func() {
 
 		pullRequest := pullRequests[0]
 		Expect(pullRequest.Author()).To(Equal("dgoodwin"))
-
-		comments := pullRequest.Comments()
-		Expect(comments).To(HaveLen(1))
-
-		comment := comments[0]
-		Expect(comment.Author()).To(Equal("k8s-ci-robot"))
-
 	})
 
 	It("passes the correct URL to the fetcher", func() {

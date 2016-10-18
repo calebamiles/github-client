@@ -12,11 +12,10 @@ import (
 
 // ensure our fakes can be used by consumers if desired
 var _ prs.PullRequest = &prsfakes.FakePullRequest{}
-var _ prs.PullRequestWithoutComments = &prsfakes.FakePullRequestWithoutComments{}
 
 var _ = Describe("building pull requests from JSON", func() {
 	Describe("New", func() {
-		It("builds a slice of BasicPullRequest from raw JSON", func() {
+		It("builds a slice of PullRequest from raw JSON", func() {
 			ts := []times{}
 			err := json.Unmarshal([]byte(pullsStub), &ts)
 			Expect(err).ToNot(HaveOccurred())
@@ -30,7 +29,6 @@ var _ = Describe("building pull requests from JSON", func() {
 
 			Expect(pr.Author()).To(Equal("dgoodwin"))
 			Expect(pr.Body()).To(ContainSubstring("Thanks for sending a pull request!"))
-			Expect(pr.CommentsURL()).To(Equal("https://api.github.com/repos/kubernetes/kubernetes/issues/33885/comments"))
 			Expect(pr.CreatedAt()).To(Equal(t.CreatedAt))
 			Expect(pr.UpdatedAt()).To(Equal(t.UpdatedAt))
 			Expect(pr.Merged()).To(BeFalse())

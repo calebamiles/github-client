@@ -5,7 +5,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/calebamiles/github-client/comments"
 	"github.com/calebamiles/github-client/prs"
 )
 
@@ -31,51 +30,14 @@ func (c *DefaultClient) FetchPullRequestsSince(since time.Time) ([]prs.PullReque
 	}
 
 	var allpullRequests []prs.PullRequest
-	var pullRequestsWithoutComments []prs.PullRequestWithoutComments
 	for i := range pullRequestPages {
 		pullRequestsOnPage, loopErr := prs.New(pullRequestPages[i])
 		if loopErr != nil {
 			return nil, loopErr
 		}
 
-		pullRequestsWithoutComments = append(pullRequestsWithoutComments, pullRequestsOnPage...)
-	}
-
-	for i := range pullRequestsWithoutComments {
-		commentsURL := pullRequestsWithoutComments[i].CommentsURL()
-		var allComments []comments.Comment
-
-		commentsPages, loopErr := c.Fetcher.Fetch(commentsURL)
-		if loopErr != nil {
-			return nil, loopErr
-		}
-
-		for j := range commentsPages {
-			commentsOnPage, commentsLoopErr := comments.New(commentsPages[j])
-			if commentsLoopErr != nil {
-				return nil, commentsLoopErr
-			}
-
-			allComments = append(allComments, commentsOnPage...)
-		}
-
-		apullRequest := &pullRequest{
-			PullRequestWithoutComments: pullRequestsWithoutComments[i],
-			comments:                   allComments,
-		}
-
-		allpullRequests = append(allpullRequests, apullRequest)
+		allpullRequests = append(allpullRequests, pullRequestsOnPage...)
 	}
 
 	return allpullRequests, nil
-}
-
-type pullRequest struct {
-	prs.PullRequestWithoutComments
-	comments []comments.Comment
-}
-
-func (i *pullRequest) Comments() []comments.Comment {
-	return i.comments
-
 }

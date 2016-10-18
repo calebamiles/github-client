@@ -5,7 +5,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/calebamiles/github-client/comments"
 	"github.com/calebamiles/github-client/labels"
 	"github.com/calebamiles/github-client/milestone"
 	"github.com/calebamiles/github-client/prs"
@@ -34,12 +33,6 @@ type FakePullRequest struct {
 	titleMutex       sync.RWMutex
 	titleArgsForCall []struct{}
 	titleReturns     struct {
-		result1 string
-	}
-	CommentsURLStub        func() string
-	commentsURLMutex       sync.RWMutex
-	commentsURLArgsForCall []struct{}
-	commentsURLReturns     struct {
 		result1 string
 	}
 	OpenStub        func() bool
@@ -90,11 +83,41 @@ type FakePullRequest struct {
 	stringReturns     struct {
 		result1 string
 	}
-	CommentsStub        func() []comments.Comment
-	commentsMutex       sync.RWMutex
-	commentsArgsForCall []struct{}
-	commentsReturns     struct {
-		result1 []comments.Comment
+	NumberOfCommitsStub        func() int
+	numberOfCommitsMutex       sync.RWMutex
+	numberOfCommitsArgsForCall []struct{}
+	numberOfCommitsReturns     struct {
+		result1 int
+	}
+	NumberOfAdditionsStub        func() int
+	numberOfAdditionsMutex       sync.RWMutex
+	numberOfAdditionsArgsForCall []struct{}
+	numberOfAdditionsReturns     struct {
+		result1 int
+	}
+	NumberOfDeletionsStub        func() int
+	numberOfDeletionsMutex       sync.RWMutex
+	numberOfDeletionsArgsForCall []struct{}
+	numberOfDeletionsReturns     struct {
+		result1 int
+	}
+	NumberOfChangedFilesStub        func() int
+	numberOfChangedFilesMutex       sync.RWMutex
+	numberOfChangedFilesArgsForCall []struct{}
+	numberOfChangedFilesReturns     struct {
+		result1 int
+	}
+	NumberOfCommentsStub        func() int
+	numberOfCommentsMutex       sync.RWMutex
+	numberOfCommentsArgsForCall []struct{}
+	numberOfCommentsReturns     struct {
+		result1 int
+	}
+	CommentsURLStub        func() string
+	commentsURLMutex       sync.RWMutex
+	commentsURLArgsForCall []struct{}
+	commentsURLReturns     struct {
+		result1 string
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
@@ -196,31 +219,6 @@ func (fake *FakePullRequest) TitleCallCount() int {
 func (fake *FakePullRequest) TitleReturns(result1 string) {
 	fake.TitleStub = nil
 	fake.titleReturns = struct {
-		result1 string
-	}{result1}
-}
-
-func (fake *FakePullRequest) CommentsURL() string {
-	fake.commentsURLMutex.Lock()
-	fake.commentsURLArgsForCall = append(fake.commentsURLArgsForCall, struct{}{})
-	fake.recordInvocation("CommentsURL", []interface{}{})
-	fake.commentsURLMutex.Unlock()
-	if fake.CommentsURLStub != nil {
-		return fake.CommentsURLStub()
-	} else {
-		return fake.commentsURLReturns.result1
-	}
-}
-
-func (fake *FakePullRequest) CommentsURLCallCount() int {
-	fake.commentsURLMutex.RLock()
-	defer fake.commentsURLMutex.RUnlock()
-	return len(fake.commentsURLArgsForCall)
-}
-
-func (fake *FakePullRequest) CommentsURLReturns(result1 string) {
-	fake.CommentsURLStub = nil
-	fake.commentsURLReturns = struct {
 		result1 string
 	}{result1}
 }
@@ -425,28 +423,153 @@ func (fake *FakePullRequest) StringReturns(result1 string) {
 	}{result1}
 }
 
-func (fake *FakePullRequest) Comments() []comments.Comment {
-	fake.commentsMutex.Lock()
-	fake.commentsArgsForCall = append(fake.commentsArgsForCall, struct{}{})
-	fake.recordInvocation("Comments", []interface{}{})
-	fake.commentsMutex.Unlock()
-	if fake.CommentsStub != nil {
-		return fake.CommentsStub()
+func (fake *FakePullRequest) NumberOfCommits() int {
+	fake.numberOfCommitsMutex.Lock()
+	fake.numberOfCommitsArgsForCall = append(fake.numberOfCommitsArgsForCall, struct{}{})
+	fake.recordInvocation("NumberOfCommits", []interface{}{})
+	fake.numberOfCommitsMutex.Unlock()
+	if fake.NumberOfCommitsStub != nil {
+		return fake.NumberOfCommitsStub()
 	} else {
-		return fake.commentsReturns.result1
+		return fake.numberOfCommitsReturns.result1
 	}
 }
 
-func (fake *FakePullRequest) CommentsCallCount() int {
-	fake.commentsMutex.RLock()
-	defer fake.commentsMutex.RUnlock()
-	return len(fake.commentsArgsForCall)
+func (fake *FakePullRequest) NumberOfCommitsCallCount() int {
+	fake.numberOfCommitsMutex.RLock()
+	defer fake.numberOfCommitsMutex.RUnlock()
+	return len(fake.numberOfCommitsArgsForCall)
 }
 
-func (fake *FakePullRequest) CommentsReturns(result1 []comments.Comment) {
-	fake.CommentsStub = nil
-	fake.commentsReturns = struct {
-		result1 []comments.Comment
+func (fake *FakePullRequest) NumberOfCommitsReturns(result1 int) {
+	fake.NumberOfCommitsStub = nil
+	fake.numberOfCommitsReturns = struct {
+		result1 int
+	}{result1}
+}
+
+func (fake *FakePullRequest) NumberOfAdditions() int {
+	fake.numberOfAdditionsMutex.Lock()
+	fake.numberOfAdditionsArgsForCall = append(fake.numberOfAdditionsArgsForCall, struct{}{})
+	fake.recordInvocation("NumberOfAdditions", []interface{}{})
+	fake.numberOfAdditionsMutex.Unlock()
+	if fake.NumberOfAdditionsStub != nil {
+		return fake.NumberOfAdditionsStub()
+	} else {
+		return fake.numberOfAdditionsReturns.result1
+	}
+}
+
+func (fake *FakePullRequest) NumberOfAdditionsCallCount() int {
+	fake.numberOfAdditionsMutex.RLock()
+	defer fake.numberOfAdditionsMutex.RUnlock()
+	return len(fake.numberOfAdditionsArgsForCall)
+}
+
+func (fake *FakePullRequest) NumberOfAdditionsReturns(result1 int) {
+	fake.NumberOfAdditionsStub = nil
+	fake.numberOfAdditionsReturns = struct {
+		result1 int
+	}{result1}
+}
+
+func (fake *FakePullRequest) NumberOfDeletions() int {
+	fake.numberOfDeletionsMutex.Lock()
+	fake.numberOfDeletionsArgsForCall = append(fake.numberOfDeletionsArgsForCall, struct{}{})
+	fake.recordInvocation("NumberOfDeletions", []interface{}{})
+	fake.numberOfDeletionsMutex.Unlock()
+	if fake.NumberOfDeletionsStub != nil {
+		return fake.NumberOfDeletionsStub()
+	} else {
+		return fake.numberOfDeletionsReturns.result1
+	}
+}
+
+func (fake *FakePullRequest) NumberOfDeletionsCallCount() int {
+	fake.numberOfDeletionsMutex.RLock()
+	defer fake.numberOfDeletionsMutex.RUnlock()
+	return len(fake.numberOfDeletionsArgsForCall)
+}
+
+func (fake *FakePullRequest) NumberOfDeletionsReturns(result1 int) {
+	fake.NumberOfDeletionsStub = nil
+	fake.numberOfDeletionsReturns = struct {
+		result1 int
+	}{result1}
+}
+
+func (fake *FakePullRequest) NumberOfChangedFiles() int {
+	fake.numberOfChangedFilesMutex.Lock()
+	fake.numberOfChangedFilesArgsForCall = append(fake.numberOfChangedFilesArgsForCall, struct{}{})
+	fake.recordInvocation("NumberOfChangedFiles", []interface{}{})
+	fake.numberOfChangedFilesMutex.Unlock()
+	if fake.NumberOfChangedFilesStub != nil {
+		return fake.NumberOfChangedFilesStub()
+	} else {
+		return fake.numberOfChangedFilesReturns.result1
+	}
+}
+
+func (fake *FakePullRequest) NumberOfChangedFilesCallCount() int {
+	fake.numberOfChangedFilesMutex.RLock()
+	defer fake.numberOfChangedFilesMutex.RUnlock()
+	return len(fake.numberOfChangedFilesArgsForCall)
+}
+
+func (fake *FakePullRequest) NumberOfChangedFilesReturns(result1 int) {
+	fake.NumberOfChangedFilesStub = nil
+	fake.numberOfChangedFilesReturns = struct {
+		result1 int
+	}{result1}
+}
+
+func (fake *FakePullRequest) NumberOfComments() int {
+	fake.numberOfCommentsMutex.Lock()
+	fake.numberOfCommentsArgsForCall = append(fake.numberOfCommentsArgsForCall, struct{}{})
+	fake.recordInvocation("NumberOfComments", []interface{}{})
+	fake.numberOfCommentsMutex.Unlock()
+	if fake.NumberOfCommentsStub != nil {
+		return fake.NumberOfCommentsStub()
+	} else {
+		return fake.numberOfCommentsReturns.result1
+	}
+}
+
+func (fake *FakePullRequest) NumberOfCommentsCallCount() int {
+	fake.numberOfCommentsMutex.RLock()
+	defer fake.numberOfCommentsMutex.RUnlock()
+	return len(fake.numberOfCommentsArgsForCall)
+}
+
+func (fake *FakePullRequest) NumberOfCommentsReturns(result1 int) {
+	fake.NumberOfCommentsStub = nil
+	fake.numberOfCommentsReturns = struct {
+		result1 int
+	}{result1}
+}
+
+func (fake *FakePullRequest) CommentsURL() string {
+	fake.commentsURLMutex.Lock()
+	fake.commentsURLArgsForCall = append(fake.commentsURLArgsForCall, struct{}{})
+	fake.recordInvocation("CommentsURL", []interface{}{})
+	fake.commentsURLMutex.Unlock()
+	if fake.CommentsURLStub != nil {
+		return fake.CommentsURLStub()
+	} else {
+		return fake.commentsURLReturns.result1
+	}
+}
+
+func (fake *FakePullRequest) CommentsURLCallCount() int {
+	fake.commentsURLMutex.RLock()
+	defer fake.commentsURLMutex.RUnlock()
+	return len(fake.commentsURLArgsForCall)
+}
+
+func (fake *FakePullRequest) CommentsURLReturns(result1 string) {
+	fake.CommentsURLStub = nil
+	fake.commentsURLReturns = struct {
+		result1 string
 	}{result1}
 }
 
@@ -461,8 +584,6 @@ func (fake *FakePullRequest) Invocations() map[string][][]interface{} {
 	defer fake.bodyMutex.RUnlock()
 	fake.titleMutex.RLock()
 	defer fake.titleMutex.RUnlock()
-	fake.commentsURLMutex.RLock()
-	defer fake.commentsURLMutex.RUnlock()
 	fake.openMutex.RLock()
 	defer fake.openMutex.RUnlock()
 	fake.mergedMutex.RLock()
@@ -479,8 +600,18 @@ func (fake *FakePullRequest) Invocations() map[string][][]interface{} {
 	defer fake.updatedAtMutex.RUnlock()
 	fake.stringMutex.RLock()
 	defer fake.stringMutex.RUnlock()
-	fake.commentsMutex.RLock()
-	defer fake.commentsMutex.RUnlock()
+	fake.numberOfCommitsMutex.RLock()
+	defer fake.numberOfCommitsMutex.RUnlock()
+	fake.numberOfAdditionsMutex.RLock()
+	defer fake.numberOfAdditionsMutex.RUnlock()
+	fake.numberOfDeletionsMutex.RLock()
+	defer fake.numberOfDeletionsMutex.RUnlock()
+	fake.numberOfChangedFilesMutex.RLock()
+	defer fake.numberOfChangedFilesMutex.RUnlock()
+	fake.numberOfCommentsMutex.RLock()
+	defer fake.numberOfCommentsMutex.RUnlock()
+	fake.commentsURLMutex.RLock()
+	defer fake.commentsURLMutex.RUnlock()
 	return fake.invocations
 }
 
