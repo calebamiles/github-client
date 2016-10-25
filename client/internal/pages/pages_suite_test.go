@@ -1,4 +1,4 @@
-package comments_test
+package pages_test
 
 import (
 	"log"
@@ -9,9 +9,9 @@ import (
 	"testing"
 )
 
-func TestComment(t *testing.T) {
+func TestPages(t *testing.T) {
 	log.SetOutput(GinkgoWriter)
 
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Comments Suite")
+	RunSpecs(t, "Pages Suite")
 }

@@ -59,9 +59,7 @@ var _ = Describe("FetchPullRequestsSince", func() {
 			RepoOwner: repoOwner,
 		}
 
-		_, err := c.FetchPullRequestsSince(now)
-		Expect(err).ToNot(HaveOccurred())
-
+		c.FetchPullRequestsSince(now)
 		urlString := fetcher.FetchArgsForCall(0)
 		u, err := url.Parse(urlString)
 		Expect(err).ToNot(HaveOccurred())
@@ -82,9 +80,7 @@ var _ = Describe("FetchPullRequestsSince", func() {
 			Fetcher: fetcher,
 		}
 
-		_, err := c.FetchPullRequestsSince(emptyTime)
-		Expect(err).ToNot(HaveOccurred())
-
+		c.FetchPullRequestsSince(emptyTime)
 		urlString := fetcher.FetchArgsForCall(0)
 		u, err := url.Parse(urlString)
 		Expect(err).ToNot(HaveOccurred())

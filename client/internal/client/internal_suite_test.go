@@ -1,6 +1,8 @@
 package client_test
 
 import (
+	"log"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -8,6 +10,8 @@ import (
 )
 
 func TestInternal(t *testing.T) {
+	log.SetOutput(GinkgoWriter)
+
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Client Internal Suite")
 }
