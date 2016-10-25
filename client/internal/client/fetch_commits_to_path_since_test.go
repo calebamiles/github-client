@@ -89,9 +89,7 @@ var _ = Describe("shared behavior", func() {
 			RepoOwner: repoOwner,
 		}
 
-		_, err := c.FetchCommitsToPathSince(testPath, now)
-		Expect(err).ToNot(HaveOccurred())
-
+		c.FetchCommitsToPathSince(testPath, now)
 		urlString := fetcher.FetchArgsForCall(0)
 		u, err := url.Parse(urlString)
 		Expect(err).ToNot(HaveOccurred())
@@ -113,9 +111,7 @@ var _ = Describe("shared behavior", func() {
 			Fetcher: fetcher,
 		}
 
-		_, err := c.FetchCommitsToPathSince("", now)
-		Expect(err).ToNot(HaveOccurred())
-
+		c.FetchCommitsToPathSince("", now)
 		urlString := fetcher.FetchArgsForCall(0)
 		u, err := url.Parse(urlString)
 		Expect(err).ToNot(HaveOccurred())
@@ -136,9 +132,7 @@ var _ = Describe("shared behavior", func() {
 			Fetcher: fetcher,
 		}
 
-		_, err := c.FetchCommitsToPathSince("", emptyTime)
-		Expect(err).ToNot(HaveOccurred())
-
+		c.FetchCommitsToPathSince("", emptyTime)
 		urlString := fetcher.FetchArgsForCall(0)
 		u, err := url.Parse(urlString)
 		Expect(err).ToNot(HaveOccurred())

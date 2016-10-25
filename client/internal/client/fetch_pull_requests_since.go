@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/calebamiles/github-client/client/internal/pages"
 	"github.com/calebamiles/github-client/prs"
 )
 
@@ -29,15 +30,11 @@ func (c *DefaultClient) FetchPullRequestsSince(since time.Time) ([]prs.PullReque
 		return nil, err
 	}
 
-	var allpullRequests []prs.PullRequest
-	for i := range pullRequestPages {
-		pullRequestsOnPage, loopErr := prs.New(pullRequestPages[i])
-		if loopErr != nil {
-			return nil, loopErr
-		}
-
-		allpullRequests = append(allpullRequests, pullRequestsOnPage...)
+	joinedPullRequestPages := pages.Join(pullRequestPages)
+	pullRequestsWithoutComments, err := prs.New(joinedPullRequestPages)
+	if err != nil {
+		return nil, err
 	}
 
-	return allpullRequests, nil
+	return pullRequestsWithoutComments, nil
 }
