@@ -1,8 +1,12 @@
-hash: 2d32086d3a90d4a956b941c1e4a4f69c4307f1cbc2f07625c6a7fda6b7de7daf
-updated: 2016-10-03T22:37:29.80916632-07:00
+hash: a159324f382e6d18b79358ed37c6588882226d158cd8363a5c45233c97f18e04
+updated: 2016-10-25T12:17:04.251733637-07:00
 imports:
+- name: github.com/boltdb/bolt
+  version: 074dffcc83e9f421e261526d297cd93f22a34080
+  subpackages:
+  - '...'
 - name: github.com/onsi/ginkgo
-  version: 45a5f6ffb2a14e4f29698c16ae4c0a34018a8951
+  version: a8ccd817611666211fdf6e6a752174a0db8374a8
   subpackages:
   - config
   - extensions/table
@@ -18,9 +22,11 @@ imports:
   - internal/writer
   - reporters
   - reporters/stenographer
+  - reporters/stenographer/support/go-colorable
+  - reporters/stenographer/support/go-isatty
   - types
 - name: github.com/onsi/gomega
-  version: d59fa0ac68bb5dd932ee8d24eed631cdd519efc3
+  version: 16f4cfdc64db0987ed3e7baf813c13bdc253b24b
   subpackages:
   - format
   - internal/assertion
@@ -37,6 +43,6 @@ imports:
   version: a5b47d31c556af34a302ce5d659e6fea44d90de0
 testImports:
 - name: golang.org/x/sys
-  version: 8f0908ab3b2457e2e15403d3697c9ef5cb4b57a9
+  version: c200b10b5d5e122be351b67af224adc6128af5bf
   subpackages:
   - unix
