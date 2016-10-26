@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/calebamiles/github-client/client/internal/commit"
-	"github.com/calebamiles/github-client/client/internal/pages"
 	"github.com/calebamiles/github-client/commits"
 )
 
@@ -44,8 +43,7 @@ func (c *DefaultClient) fetchCommitsToPathSince(path string, since time.Time, fe
 		return nil, err
 	}
 
-	joinedCommitPages := pages.Join(commitPages)
-	commitsWithoutComments, err := commits.New(joinedCommitPages)
+	commitsWithoutComments, err := commits.New(commitPages)
 	if err != nil {
 		return nil, err
 	}

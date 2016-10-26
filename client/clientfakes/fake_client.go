@@ -50,13 +50,13 @@ type FakeClient struct {
 		result1 []prs.PullRequest
 		result2 error
 	}
-	FetchPagesStub        func(string) ([][]byte, error)
-	fetchPagesMutex       sync.RWMutex
-	fetchPagesArgsForCall []struct {
+	FetchPageStub        func(string) ([]byte, error)
+	fetchPageMutex       sync.RWMutex
+	fetchPageArgsForCall []struct {
 		arg1 string
 	}
-	fetchPagesReturns struct {
-		result1 [][]byte
+	fetchPageReturns struct {
+		result1 []byte
 		result2 error
 	}
 	invocations      map[string][][]interface{}
@@ -201,36 +201,36 @@ func (fake *FakeClient) FetchPullRequestsSinceReturns(result1 []prs.PullRequest,
 	}{result1, result2}
 }
 
-func (fake *FakeClient) FetchPages(arg1 string) ([][]byte, error) {
-	fake.fetchPagesMutex.Lock()
-	fake.fetchPagesArgsForCall = append(fake.fetchPagesArgsForCall, struct {
+func (fake *FakeClient) FetchPage(arg1 string) ([]byte, error) {
+	fake.fetchPageMutex.Lock()
+	fake.fetchPageArgsForCall = append(fake.fetchPageArgsForCall, struct {
 		arg1 string
 	}{arg1})
-	fake.recordInvocation("FetchPages", []interface{}{arg1})
-	fake.fetchPagesMutex.Unlock()
-	if fake.FetchPagesStub != nil {
-		return fake.FetchPagesStub(arg1)
+	fake.recordInvocation("FetchPage", []interface{}{arg1})
+	fake.fetchPageMutex.Unlock()
+	if fake.FetchPageStub != nil {
+		return fake.FetchPageStub(arg1)
 	} else {
-		return fake.fetchPagesReturns.result1, fake.fetchPagesReturns.result2
+		return fake.fetchPageReturns.result1, fake.fetchPageReturns.result2
 	}
 }
 
-func (fake *FakeClient) FetchPagesCallCount() int {
-	fake.fetchPagesMutex.RLock()
-	defer fake.fetchPagesMutex.RUnlock()
-	return len(fake.fetchPagesArgsForCall)
+func (fake *FakeClient) FetchPageCallCount() int {
+	fake.fetchPageMutex.RLock()
+	defer fake.fetchPageMutex.RUnlock()
+	return len(fake.fetchPageArgsForCall)
 }
 
-func (fake *FakeClient) FetchPagesArgsForCall(i int) string {
-	fake.fetchPagesMutex.RLock()
-	defer fake.fetchPagesMutex.RUnlock()
-	return fake.fetchPagesArgsForCall[i].arg1
+func (fake *FakeClient) FetchPageArgsForCall(i int) string {
+	fake.fetchPageMutex.RLock()
+	defer fake.fetchPageMutex.RUnlock()
+	return fake.fetchPageArgsForCall[i].arg1
 }
 
-func (fake *FakeClient) FetchPagesReturns(result1 [][]byte, result2 error) {
-	fake.FetchPagesStub = nil
-	fake.fetchPagesReturns = struct {
-		result1 [][]byte
+func (fake *FakeClient) FetchPageReturns(result1 []byte, result2 error) {
+	fake.FetchPageStub = nil
+	fake.fetchPageReturns = struct {
+		result1 []byte
 		result2 error
 	}{result1, result2}
 }
@@ -246,8 +246,8 @@ func (fake *FakeClient) Invocations() map[string][][]interface{} {
 	defer fake.fetchIssuesSinceMutex.RUnlock()
 	fake.fetchPullRequestsSinceMutex.RLock()
 	defer fake.fetchPullRequestsSinceMutex.RUnlock()
-	fake.fetchPagesMutex.RLock()
-	defer fake.fetchPagesMutex.RUnlock()
+	fake.fetchPageMutex.RLock()
+	defer fake.fetchPageMutex.RUnlock()
 	return fake.invocations
 }
 

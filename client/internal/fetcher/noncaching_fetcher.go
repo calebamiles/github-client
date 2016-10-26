@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/calebamiles/github-client/client/fetcher"
+	"github.com/calebamiles/github-client/client/internal/pages"
 	"github.com/calebamiles/github-client/client/internal/paginator"
 	abstract "github.com/calebamiles/github-client/client/paginator"
 )
@@ -32,7 +33,7 @@ type DefaultFetcher struct {
 }
 
 // Fetch fetches all pages reachable from url, according to the PaginationFunc
-func (f *DefaultFetcher) Fetch(url string) ([][]byte, error) {
+func (f *DefaultFetcher) Fetch(url string) ([]byte, error) {
 	var allPageBodies [][]byte
 	var c *http.Client
 
@@ -73,5 +74,7 @@ func (f *DefaultFetcher) Fetch(url string) ([][]byte, error) {
 		allPageBodies = append(allPageBodies, loopBody)
 	}
 
-	return allPageBodies, nil
+	joinedPages := pages.Join(allPageBodies)
+
+	return joinedPages, nil
 }

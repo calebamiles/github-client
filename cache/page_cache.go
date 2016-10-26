@@ -12,19 +12,8 @@ import (
 	"github.com/boltdb/bolt"
 )
 
-/*
-	Expected workflow:
-		1.  call KeyForPage() -> get cache key (etag)
-			1a. if cacheKey != "" make conditional API request
-			1b. if 302 (unchanged) call FetchPageByKey() -> response body
-			1c. if resource page changed make API request
-			1d. call AddPage -> page body cached
-		2.  if cacheKey == "" make API request
-		  2a. call AddPage -> page body cached
-*/
-
 type PageCache interface {
-	KeyForPage(pageURL string) (cacheKey string, exists bool, err error)
+	KeyForPage(pageURL string) (cacheKey string, err error)
 	FetchPageByKey(cacheKey string) (page []byte, err error)
 	AddPage(pageURL string, cacheKey string, page []byte) error
 	Open() error
@@ -48,6 +37,100 @@ type pageCache struct {
 	db        *bolt.DB
 	openOnce  sync.Once
 	closeOnce sync.Once
+}
+
+func (c *pageCache) AddPage(pageURL string, cacheKey string, page []byte) error {
+	return c.db.Batch(func(tx *bolt.Tx) error {
+		var commitErr error
+
+		keys := tx.Bucket([]byte(keysBucket))
+		pages := tx.Bucket([]byte(pagesBucket))
+
+		hash := md5.New()
+		_, commitErr = io.WriteString(hash, pageURL)
+		if commitErr != nil {
+			log.Printf("failed to hash page URL: %s: %s\n", pageURL, commitErr)
+			return commitErr
+		}
+
+		pageKey := hash.Sum(nil)
+
+		previousCacheKey := keys.Get(pageKey)
+		commitErr = keys.Put(pageKey, []byte(cacheKey))
+		if commitErr != nil {
+			log.Printf("failed to put cacheKey %s for URL: %s: %s\n", cacheKey, pageURL, commitErr)
+			return commitErr
+		}
+
+		commitErr = pages.Put([]byte(cacheKey), page)
+		if commitErr != nil {
+			log.Printf("failed to put page body for URL: %s: %s\n", pageURL, commitErr)
+			return commitErr
+		}
+
+		if previousCacheKey != nil {
+			commitErr = pages.Delete(previousCacheKey)
+			if commitErr != nil {
+				log.Printf("failed to purge previously cached page for URL: %s: %s", pageURL, commitErr)
+				return commitErr
+			}
+		}
+
+		return nil
+	})
+}
+
+func (c *pageCache) KeyForPage(pageURL string) (string, error) {
+	var cacheKey string
+
+	err := c.db.View(func(tx *bolt.Tx) error {
+		var viewErr error
+
+		keys := tx.Bucket([]byte(keysBucket))
+
+		hash := md5.New()
+		_, viewErr = io.WriteString(hash, pageURL)
+		if viewErr != nil {
+			log.Printf("failed to hash page URL: %s\n", viewErr)
+			return viewErr
+		}
+
+		pageKey := hash.Sum(nil)
+
+		cacheKey = string(keys.Get(pageKey))
+		return nil
+	})
+
+	if err != nil {
+		log.Printf("failed to fetch cache key for URL %s: %s\n", pageURL, err)
+		return "", err
+	}
+
+	return cacheKey, nil
+}
+
+func (c *pageCache) FetchPageByKey(cacheKey string) ([]byte, error) {
+	var fetchedPage []byte
+
+	err := c.db.View(func(tx *bolt.Tx) error {
+		pages := tx.Bucket([]byte(pagesBucket))
+		pageFromCache := pages.Get([]byte(cacheKey))
+		if pageFromCache == nil {
+			log.Printf("nil page returned from cache for key %s...hopefully this is due to cache eviction\n", cacheKey)
+			return errors.New("page not found in cache")
+		}
+
+		//copy our the fetched data out of the transaction
+		fetchedPage = append(fetchedPage, pageFromCache...)
+		return nil
+	})
+
+	if err != nil {
+		log.Printf("failed to fetch cached page for cache key %s: %s\n", cacheKey, err)
+		return nil, err
+	}
+
+	return fetchedPage, nil
 }
 
 func (c *pageCache) Open() error {
@@ -94,92 +177,4 @@ func (c *pageCache) Close() error {
 	})
 
 	return closeErr
-}
-
-func (c *pageCache) AddPage(pageURL string, cacheKey string, page []byte) error {
-	return c.db.Batch(func(tx *bolt.Tx) error {
-		var commitErr error
-
-		keys := tx.Bucket([]byte(keysBucket))
-		pages := tx.Bucket([]byte(pagesBucket))
-
-		hash := md5.New()
-		_, commitErr = io.WriteString(hash, pageURL)
-		if commitErr != nil {
-			log.Printf("failed to hash page URL: %s: %s\n", pageURL, commitErr)
-			return commitErr
-		}
-
-		pageKey := hash.Sum(nil)
-
-		commitErr = keys.Put(pageKey, []byte(cacheKey))
-		if commitErr != nil {
-			log.Printf("failed to put cacheKey %s for URL: %s: %s\n", cacheKey, pageURL, commitErr)
-			return commitErr
-		}
-
-		commitErr = pages.Put([]byte(cacheKey), page)
-		if commitErr != nil {
-			log.Printf("failed to put page body for URL: %s: %s\n", pageURL, commitErr)
-			return commitErr
-		}
-
-		return nil
-	})
-}
-
-func (c *pageCache) KeyForPage(pageURL string) (string, bool, error) {
-	var cacheKey string
-
-	err := c.db.View(func(tx *bolt.Tx) error {
-		var viewErr error
-
-		keys := tx.Bucket([]byte(keysBucket))
-
-		hash := md5.New()
-		_, viewErr = io.WriteString(hash, pageURL)
-		if viewErr != nil {
-			log.Printf("failed to hash page URL: %s\n", viewErr)
-			return viewErr
-		}
-
-		pageKey := hash.Sum(nil)
-
-		cacheKey = string(keys.Get(pageKey))
-		return nil
-	})
-
-	if err != nil {
-		log.Printf("failed to fetch cache key for URL %s: %s\n", pageURL, err)
-		return "", false, err
-	}
-
-	if cacheKey == "" {
-		return "", false, nil
-	}
-
-	return cacheKey, true, nil
-}
-
-func (c *pageCache) FetchPageByKey(cacheKey string) ([]byte, error) {
-	var fetchedPage []byte
-
-	err := c.db.View(func(tx *bolt.Tx) error {
-		pages := tx.Bucket([]byte(pagesBucket))
-		pageFromCache := pages.Get([]byte(cacheKey))
-		if pageFromCache == nil {
-			log.Printf("nil page returned from cache for key %s...this should not have happened\n", cacheKey)
-			return errors.New("page not found in cache")
-		}
-
-		copy(fetchedPage, pageFromCache)
-		return nil
-	})
-
-	if err != nil {
-		log.Printf("failed to fetch cached page for cache key %s: %s\n", cacheKey, err)
-		return nil, err
-	}
-
-	return fetchedPage, nil
 }

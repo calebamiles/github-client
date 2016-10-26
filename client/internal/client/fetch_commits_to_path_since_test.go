@@ -16,7 +16,7 @@ var _ = Describe("FetchCommitsWithCommentsToPathSince", func() {
 	It("returns a slice of commits with comments", func() {
 		now := time.Now()
 		fetcher := &fetcherfakes.FakeFetcher{}
-		fetcher.FetchStub = func(urlString string) ([][]byte, error) {
+		fetcher.FetchStub = func(urlString string) ([]byte, error) {
 			if strings.HasSuffix(urlString, "comments") {
 				return commentsPagesStub, nil
 			}
@@ -47,7 +47,7 @@ var _ = Describe("FetchCommitsToPathSince", func() {
 	It("returns a slice of commits without comments", func() {
 		now := time.Now()
 		fetcher := &fetcherfakes.FakeFetcher{}
-		fetcher.FetchStub = func(urlString string) ([][]byte, error) {
+		fetcher.FetchStub = func(urlString string) ([]byte, error) {
 			if strings.HasSuffix(urlString, "comments") {
 				return commentsPagesStub, nil
 			}

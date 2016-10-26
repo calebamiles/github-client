@@ -16,7 +16,7 @@ var _ = Describe("FetchIssuesSince", func() {
 	It("returns a slice of issues with comments", func() {
 		now := time.Now()
 		fetcher := &fetcherfakes.FakeFetcher{}
-		fetcher.FetchStub = func(urlString string) ([][]byte, error) {
+		fetcher.FetchStub = func(urlString string) ([]byte, error) {
 			if strings.HasSuffix(urlString, "comments") {
 				return commentsPagesStub, nil
 			}

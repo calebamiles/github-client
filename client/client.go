@@ -16,7 +16,7 @@ type Client interface {
 	FetchCommitsWithCommentsToPathSince(string, time.Time) ([]commits.Commit, error)
 	FetchIssuesSince(time.Time) ([]issues.Issue, error)
 	FetchPullRequestsSince(time.Time) ([]prs.PullRequest, error)
-	FetchPages(string) ([][]byte, error)
+	FetchPage(string) ([]byte, error)
 }
 
 // New returns a new github/client.Client that is ready for use

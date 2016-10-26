@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("FetchPages", func() {
+var _ = Describe("FetchPage", func() {
 	It("delgates to a Fetcher", func() {
 		testURL := "https://www.example.com/"
 		fetcher := &fetcherfakes.FakeFetcher{}
@@ -16,7 +16,7 @@ var _ = Describe("FetchPages", func() {
 			Fetcher: fetcher,
 		}
 
-		_, err := c.FetchPages(testURL)
+		_, err := c.FetchPage(testURL)
 		Expect(err).ToNot(HaveOccurred())
 
 		calledURL := fetcher.FetchArgsForCall(0)

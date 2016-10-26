@@ -5,7 +5,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/calebamiles/github-client/client/internal/pages"
 	"github.com/calebamiles/github-client/comments"
 	"github.com/calebamiles/github-client/issues"
 )
@@ -31,8 +30,7 @@ func (c *DefaultClient) FetchIssuesSince(since time.Time) ([]issues.Issue, error
 		return nil, err
 	}
 
-	joinedIssuePages := pages.Join(issuePages)
-	issuesWithoutComments, err := issues.New(joinedIssuePages)
+	issuesWithoutComments, err := issues.New(issuePages)
 	if err != nil {
 		return nil, err
 	}
@@ -40,20 +38,15 @@ func (c *DefaultClient) FetchIssuesSince(since time.Time) ([]issues.Issue, error
 	var allIssues []issues.Issue
 	for i := range issuesWithoutComments {
 		commentsURL := issuesWithoutComments[i].CommentsURL()
-		var allComments []comments.Comment
 
 		commentsPages, loopErr := c.Fetcher.Fetch(commentsURL)
 		if loopErr != nil {
 			return nil, loopErr
 		}
 
-		for j := range commentsPages {
-			commentsOnPage, commentsLoopErr := comments.New(commentsPages[j])
-			if commentsLoopErr != nil {
-				return nil, commentsLoopErr
-			}
-
-			allComments = append(allComments, commentsOnPage...)
+		allComments, loopErr := comments.New(commentsPages)
+		if loopErr != nil {
+			return nil, loopErr
 		}
 
 		anIssue := &issue{

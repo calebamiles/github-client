@@ -2,5 +2,5 @@ package fetcher
 
 // A Fetcher uses a paginator to return all pages reachable from a base URL
 type Fetcher interface {
-	Fetch(string) ([][]byte, error)
+	Fetch(url string) (pageContent []byte, err error)
 }

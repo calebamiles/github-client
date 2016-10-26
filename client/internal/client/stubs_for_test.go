@@ -1,6 +1,6 @@
 package client_test
 
-var commitsPagesStub = [][]byte{[]byte(commitsStub)}
+var commitsPagesStub = []byte(commitsStub)
 
 const commitsStub = `
 [
@@ -82,7 +82,7 @@ const commitsStub = `
 ]
 `
 
-var commentsPagesStub = [][]byte{[]byte(commentsStub)}
+var commentsPagesStub = []byte(commentsStub)
 
 const commentsStub = `
 [
@@ -117,7 +117,7 @@ const commentsStub = `
 ]
 `
 
-var issuesPagesStub = [][]byte{[]byte(issuesStub)}
+var issuesPagesStub = []byte(issuesStub)
 
 const issuesStub = `
 [
@@ -258,7 +258,7 @@ const issuesStub = `
 ]
 `
 
-var pullRequestsPagesStub = [][]byte{[]byte(pullRequestsStub)}
+var pullRequestsPagesStub = []byte(pullRequestsStub)
 
 const pullRequestsStub = `
 [
