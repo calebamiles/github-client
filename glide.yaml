@@ -5,3 +5,6 @@ import:
   subpackages:
   - extensions/table
 - package: gopkg.in/yaml.v2
+- package: github.com/boltdb/bolt
+  subpackages:
+  - '...'
