@@ -65,21 +65,16 @@ func processCommits(commitWithoutComments commits.CommitWithoutComments, f fetch
 		return
 	}
 
-	commentsPages, err := f.Fetch(commitWithoutComments.CommentsURL())
+	commentsPage, err := f.Fetch(commitWithoutComments.CommentsURL())
 	if err != nil {
 		errs.Add(err)
 		return
-
 	}
-	var allComments []comments.Comment
-	for j := range commentsPages {
-		commentsOnPage, commentsLoopErr := comments.New(commentsPages[j])
-		if commentsLoopErr != nil {
-			errs.Add(commentsLoopErr)
-			return
-		}
 
-		allComments = append(allComments, commentsOnPage...)
+	allComments, err := comments.New(commentsPage)
+	if err != nil {
+		errs.Add(err)
+		return
 	}
 
 	commitToAdd := &commit{

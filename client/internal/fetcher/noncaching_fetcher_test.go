@@ -33,24 +33,18 @@ var _ = Describe("DefaultFetcher", func() {
 		serverURL, err := url.Parse(s.URL)
 		Expect(err).ToNot(HaveOccurred())
 
-		pages, err := fetcher.Fetch(serverURL.String())
+		fetchedPages, err := fetcher.Fetch(serverURL.String())
 		Expect(err).ToNot(HaveOccurred())
 
 		serverHits := atomic.LoadUint32(&handler.requests)
 		Expect(serverHits).To(BeEquivalentTo(numberOfPagesToServe))
-		Expect(pages).To(HaveLen(numberOfPagesToServe))
 
-		firstPage := testPage{}
-		secondPage := testPage{}
-
-		err = json.Unmarshal(pages[0], &firstPage)
+		testPages := []testPage{}
+		err = json.Unmarshal(fetchedPages, &testPages)
 		Expect(err).ToNot(HaveOccurred())
 
-		err = json.Unmarshal(pages[1], &secondPage)
-		Expect(err).ToNot(HaveOccurred())
-
-		Expect(firstPage.Content).To(Equal("there have been: 1 requests"))
-		Expect(secondPage.Content).To(Equal("there have been: 2 requests"))
+		Expect(testPages[0].Content).To(Equal("there have been: 1 requests"))
+		Expect(testPages[1].Content).To(Equal("there have been: 2 requests"))
 	})
 
 	It("returns an error for non 200 status", func() {

@@ -8,28 +8,28 @@ import (
 )
 
 type FakeFetcher struct {
-	FetchStub        func(string) ([][]byte, error)
+	FetchStub        func(url string) (pageContent []byte, err error)
 	fetchMutex       sync.RWMutex
 	fetchArgsForCall []struct {
-		arg1 string
+		url string
 	}
 	fetchReturns struct {
-		result1 [][]byte
+		result1 []byte
 		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeFetcher) Fetch(arg1 string) ([][]byte, error) {
+func (fake *FakeFetcher) Fetch(url string) (pageContent []byte, err error) {
 	fake.fetchMutex.Lock()
 	fake.fetchArgsForCall = append(fake.fetchArgsForCall, struct {
-		arg1 string
-	}{arg1})
-	fake.recordInvocation("Fetch", []interface{}{arg1})
+		url string
+	}{url})
+	fake.recordInvocation("Fetch", []interface{}{url})
 	fake.fetchMutex.Unlock()
 	if fake.FetchStub != nil {
-		return fake.FetchStub(arg1)
+		return fake.FetchStub(url)
 	} else {
 		return fake.fetchReturns.result1, fake.fetchReturns.result2
 	}
@@ -44,13 +44,13 @@ func (fake *FakeFetcher) FetchCallCount() int {
 func (fake *FakeFetcher) FetchArgsForCall(i int) string {
 	fake.fetchMutex.RLock()
 	defer fake.fetchMutex.RUnlock()
-	return fake.fetchArgsForCall[i].arg1
+	return fake.fetchArgsForCall[i].url
 }
 
-func (fake *FakeFetcher) FetchReturns(result1 [][]byte, result2 error) {
+func (fake *FakeFetcher) FetchReturns(result1 []byte, result2 error) {
 	fake.FetchStub = nil
 	fake.fetchReturns = struct {
-		result1 [][]byte
+		result1 []byte
 		result2 error
 	}{result1, result2}
 }
