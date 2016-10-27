@@ -16,12 +16,12 @@ var _ = Describe("FetchIssuesSince", func() {
 	It("returns a slice of issues with comments", func() {
 		now := time.Now()
 		fetcher := &fetcherfakes.FakeFetcher{}
-		fetcher.FetchStub = func(urlString string) ([]byte, error) {
+		fetcher.FetchStub = func(urlString string) ([]byte, string, error) {
 			if strings.HasSuffix(urlString, "comments") {
-				return commentsPagesStub, nil
+				return commentsPagesStub, "", nil
 			}
 
-			return issuesPagesStub, nil
+			return issuesPagesStub, "", nil
 		}
 
 		c := &client.DefaultClient{
@@ -51,7 +51,6 @@ var _ = Describe("FetchIssuesSince", func() {
 		expectedPath := fmt.Sprintf("/repos/%s/%s/issues", repoOwner, repoName)
 
 		fetcher := &fetcherfakes.FakeFetcher{}
-		fetcher.FetchReturns(nil, nil)
 
 		c := &client.DefaultClient{
 			Fetcher:   fetcher,
@@ -74,7 +73,6 @@ var _ = Describe("FetchIssuesSince", func() {
 	It("only adds since if non zero", func() {
 		emptyTime := time.Time{}
 		fetcher := &fetcherfakes.FakeFetcher{}
-		fetcher.FetchReturns(nil, nil)
 
 		c := &client.DefaultClient{
 			Fetcher: fetcher,

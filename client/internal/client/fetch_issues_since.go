@@ -25,7 +25,7 @@ func (c *DefaultClient) FetchIssuesSince(since time.Time) ([]issues.Issue, error
 	params.Add("per_page", NumberOfPagesToRequest)
 	u.RawQuery = params.Encode()
 
-	issuePages, err := c.Fetcher.Fetch(u.String())
+	issuePages, _, err := c.Fetcher.Fetch(u.String())
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func (c *DefaultClient) FetchIssuesSince(since time.Time) ([]issues.Issue, error
 	for i := range issuesWithoutComments {
 		commentsURL := issuesWithoutComments[i].CommentsURL()
 
-		commentsPages, loopErr := c.Fetcher.Fetch(commentsURL)
+		commentsPages, _, loopErr := c.Fetcher.Fetch(commentsURL)
 		if loopErr != nil {
 			return nil, loopErr
 		}

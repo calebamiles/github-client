@@ -16,12 +16,12 @@ var _ = Describe("FetchCommitsWithCommentsToPathSince", func() {
 	It("returns a slice of commits with comments", func() {
 		now := time.Now()
 		fetcher := &fetcherfakes.FakeFetcher{}
-		fetcher.FetchStub = func(urlString string) ([]byte, error) {
+		fetcher.FetchStub = func(urlString string) ([]byte, string, error) {
 			if strings.HasSuffix(urlString, "comments") {
-				return commentsPagesStub, nil
+				return commentsPagesStub, "", nil
 			}
 
-			return commitsPagesStub, nil
+			return commitsPagesStub, "", nil
 		}
 
 		c := &client.DefaultClient{
@@ -47,12 +47,12 @@ var _ = Describe("FetchCommitsToPathSince", func() {
 	It("returns a slice of commits without comments", func() {
 		now := time.Now()
 		fetcher := &fetcherfakes.FakeFetcher{}
-		fetcher.FetchStub = func(urlString string) ([]byte, error) {
+		fetcher.FetchStub = func(urlString string) ([]byte, string, error) {
 			if strings.HasSuffix(urlString, "comments") {
-				return commentsPagesStub, nil
+				return commentsPagesStub, "", nil
 			}
 
-			return commitsPagesStub, nil
+			return commitsPagesStub, "", nil
 		}
 
 		c := &client.DefaultClient{
@@ -81,7 +81,6 @@ var _ = Describe("shared behavior", func() {
 		expectedPath := fmt.Sprintf("/repos/%s/%s/commits", repoOwner, repoName)
 
 		fetcher := &fetcherfakes.FakeFetcher{}
-		fetcher.FetchReturns(nil, nil)
 
 		c := &client.DefaultClient{
 			Fetcher:   fetcher,
@@ -105,7 +104,6 @@ var _ = Describe("shared behavior", func() {
 	It("only adds a path when non empty", func() {
 		now := time.Now()
 		fetcher := &fetcherfakes.FakeFetcher{}
-		fetcher.FetchReturns(nil, nil)
 
 		c := &client.DefaultClient{
 			Fetcher: fetcher,
@@ -126,7 +124,6 @@ var _ = Describe("shared behavior", func() {
 	It("only adds since if non zero", func() {
 		emptyTime := time.Time{}
 		fetcher := &fetcherfakes.FakeFetcher{}
-		fetcher.FetchReturns(nil, nil)
 
 		c := &client.DefaultClient{
 			Fetcher: fetcher,

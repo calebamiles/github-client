@@ -8,14 +8,15 @@ import (
 )
 
 type FakeFetcher struct {
-	FetchStub        func(url string) (pageContent []byte, err error)
+	FetchStub        func(url string) (pageContent []byte, firstPageEtag string, err error)
 	fetchMutex       sync.RWMutex
 	fetchArgsForCall []struct {
 		url string
 	}
 	fetchReturns struct {
 		result1 []byte
-		result2 error
+		result2 string
+		result3 error
 	}
 	DoneStub        func() error
 	doneMutex       sync.RWMutex
@@ -27,7 +28,7 @@ type FakeFetcher struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeFetcher) Fetch(url string) (pageContent []byte, err error) {
+func (fake *FakeFetcher) Fetch(url string) (pageContent []byte, firstPageEtag string, err error) {
 	fake.fetchMutex.Lock()
 	fake.fetchArgsForCall = append(fake.fetchArgsForCall, struct {
 		url string
@@ -37,7 +38,7 @@ func (fake *FakeFetcher) Fetch(url string) (pageContent []byte, err error) {
 	if fake.FetchStub != nil {
 		return fake.FetchStub(url)
 	} else {
-		return fake.fetchReturns.result1, fake.fetchReturns.result2
+		return fake.fetchReturns.result1, fake.fetchReturns.result2, fake.fetchReturns.result3
 	}
 }
 
@@ -53,12 +54,13 @@ func (fake *FakeFetcher) FetchArgsForCall(i int) string {
 	return fake.fetchArgsForCall[i].url
 }
 
-func (fake *FakeFetcher) FetchReturns(result1 []byte, result2 error) {
+func (fake *FakeFetcher) FetchReturns(result1 []byte, result2 string, result3 error) {
 	fake.FetchStub = nil
 	fake.fetchReturns = struct {
 		result1 []byte
-		result2 error
-	}{result1, result2}
+		result2 string
+		result3 error
+	}{result1, result2, result3}
 }
 
 func (fake *FakeFetcher) Done() error {

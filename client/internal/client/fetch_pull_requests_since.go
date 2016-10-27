@@ -24,7 +24,7 @@ func (c *DefaultClient) FetchPullRequestsSince(since time.Time) ([]prs.PullReque
 	params.Add("per_page", NumberOfPagesToRequest)
 	u.RawQuery = params.Encode()
 
-	pullRequestPages, err := c.Fetcher.Fetch(u.String())
+	pullRequestPages, _, err := c.Fetcher.Fetch(u.String())
 	if err != nil {
 		return nil, err
 	}

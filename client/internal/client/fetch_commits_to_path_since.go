@@ -38,7 +38,7 @@ func (c *DefaultClient) fetchCommitsToPathSince(path string, since time.Time, fe
 	params.Add("per_page", NumberOfPagesToRequest)
 	u.RawQuery = params.Encode()
 
-	commitPages, err := c.Fetcher.Fetch(u.String())
+	commitPages, _, err := c.Fetcher.Fetch(u.String())
 	if err != nil {
 		return nil, err
 	}

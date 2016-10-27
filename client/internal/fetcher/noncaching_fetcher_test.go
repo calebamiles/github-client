@@ -30,8 +30,10 @@ var _ = Describe("DefaultFetcher", func() {
 			Paginate: fakePaginator,
 		}
 
-		fetchedPages, err := f.Fetch(s.URL)
+		fetchedPages, fetchedEtag, err := f.Fetch(s.URL)
 		Expect(err).ToNot(HaveOccurred())
+
+		Expect(fetchedEtag).To(Equal(someEtag))
 
 		serverHits := atomic.LoadUint32(&handler.requests)
 		Expect(serverHits).To(BeEquivalentTo(numberOfPagesToServe))
@@ -58,7 +60,7 @@ var _ = Describe("DefaultFetcher", func() {
 		serverURL, err := url.Parse(s.URL)
 		Expect(err).ToNot(HaveOccurred())
 
-		_, err = f.Fetch(serverURL.String())
+		_, _, err = f.Fetch(serverURL.String())
 		Expect(err).To(HaveOccurred())
 		Expect(err.Error()).To(ContainSubstring("got unexpected status code: 429"))
 	})
@@ -66,6 +68,7 @@ var _ = Describe("DefaultFetcher", func() {
 
 const (
 	nextPageHeaderKey = "nextPage"
+	someEtag          = "some-etag"
 )
 
 type testPage struct {
@@ -104,6 +107,7 @@ func (handler *multiplePageSender) ServeHTTP(w http.ResponseWriter, req *http.Re
 	pageBytes, err := json.Marshal(pageContent)
 	Expect(err).ToNot(HaveOccurred())
 
+	w.Header().Set(fetcher.CacheResponseHeader, someEtag)
 	w.Write(pageBytes)
 }
 

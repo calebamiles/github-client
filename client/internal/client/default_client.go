@@ -24,6 +24,7 @@ type DefaultClient struct {
 	doneOnce          sync.Once
 }
 
+// Done closes the cache and removes the temporary datastore if it exists
 func (c *DefaultClient) Done() error {
 	var err error
 

@@ -33,9 +33,10 @@ type DefaultFetcher struct {
 }
 
 // Fetch fetches all pages reachable from url, according to the PaginationFunc
-func (f *DefaultFetcher) Fetch(url string) ([]byte, error) {
+func (f *DefaultFetcher) Fetch(url string) ([]byte, string, error) {
 	var allPageBodies [][]byte
 	var c *http.Client
+	var firstPageEtag string
 
 	c = &http.Client{Timeout: 10 * time.Second}
 
@@ -45,30 +46,38 @@ func (f *DefaultFetcher) Fetch(url string) ([]byte, error) {
 	var loopBody []byte
 	var loopErr error
 
-	for currentLink := url; len(currentLink) > 0; currentLink = nextPageLink {
+	for currentLink := url; currentLink != ""; currentLink = nextPageLink {
 		loopReq, loopErr = http.NewRequest(http.MethodGet, currentLink, nil)
 		if loopErr != nil {
-			return nil, loopErr
+			return nil, "", loopErr
 		}
 
-		loopReq.Header.Set(authorizationHeader, fmt.Sprintf("token %s", f.AccessToken))
+		if f.AccessToken != "" {
+			loopReq.Header.Set(authorizationHeader, fmt.Sprintf("token %s", f.AccessToken))
+		}
+
 		loopResp, loopErr = c.Do(loopReq)
 		if loopErr != nil {
-			return nil, loopErr
+			return nil, "", loopErr
+		}
+
+		// ugly hack to special case returning the etag for the
+		if currentLink == url {
+			firstPageEtag = loopResp.Header.Get(CacheResponseHeader)
 		}
 
 		if loopResp.StatusCode != http.StatusOK {
-			return nil, fmt.Errorf("got unexpected status code: %d, desired 200", loopResp.StatusCode)
+			return nil, "", fmt.Errorf("got unexpected status code: %d, desired 200", loopResp.StatusCode)
 		}
 
 		loopBody, nextPageLink, loopErr = f.Paginate(loopResp)
 		if loopErr != nil {
-			return nil, loopErr
+			return nil, "", loopErr
 		}
 
 		loopErr = loopResp.Body.Close()
 		if loopErr != nil {
-			return nil, loopErr
+			return nil, "", loopErr
 		}
 
 		allPageBodies = append(allPageBodies, loopBody)
@@ -76,8 +85,8 @@ func (f *DefaultFetcher) Fetch(url string) ([]byte, error) {
 
 	joinedPages := pages.Join(allPageBodies)
 
-	return joinedPages, nil
+	return joinedPages, firstPageEtag, nil
 }
 
-// nothing to close here, so NoOp
+// Done has nothing to close here, so NoOp
 func (f *DefaultFetcher) Done() error { return nil }

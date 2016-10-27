@@ -32,7 +32,7 @@ var _ = Describe("CachingFetcher", func() {
 					Cache:   fakeCache,
 				}
 
-				_, err := f.Fetch(s.URL)
+				_, _, err := f.Fetch(s.URL)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(fakeFetcher.FetchCallCount()).To(BeZero())
 			})
@@ -49,14 +49,16 @@ var _ = Describe("CachingFetcher", func() {
 				fakeCache.KeyForPageReturns("some-other-etag", nil)
 
 				fakeFetcher := &fetcherfakes.FakeFetcher{}
+				fakeFetcher.FetchReturns(nil, fakeEtag, nil)
 
 				f := fetcher.DefaultCachingFetcher{
 					Fetcher: fakeFetcher,
 					Cache:   fakeCache,
 				}
 
-				_, err := f.Fetch(s.URL)
+				_, etag, err := f.Fetch(s.URL)
 				Expect(err).ToNot(HaveOccurred())
+				Expect(etag).To(Equal(fakeEtag))
 				Expect(fakeFetcher.FetchCallCount()).ToNot(BeZero())
 			})
 		})

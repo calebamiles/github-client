@@ -65,7 +65,7 @@ func processCommits(commitWithoutComments commits.CommitWithoutComments, f fetch
 		return
 	}
 
-	commentsPage, err := f.Fetch(commitWithoutComments.CommentsURL())
+	commentsPage, _, err := f.Fetch(commitWithoutComments.CommentsURL())
 	if err != nil {
 		errs.Add(err)
 		return
