@@ -29,6 +29,7 @@ var _ = Describe("PageCache", func() {
 			pageCache := cache.New(dbPath)
 			err = pageCache.Open()
 			Expect(err).ToNot(HaveOccurred())
+			defer pageCache.Close()
 
 			err = pageCache.AddPage(fakeURL, fakeCacheKey, fakePage)
 			Expect(err).ToNot(HaveOccurred())
@@ -55,6 +56,7 @@ var _ = Describe("PageCache", func() {
 			pageCache := cache.New(dbPath)
 			err = pageCache.Open()
 			Expect(err).ToNot(HaveOccurred())
+			defer pageCache.Close()
 
 			err = pageCache.AddPage(fakeURL, firstCacheKey, fakePage)
 			Expect(err).ToNot(HaveOccurred())
@@ -83,6 +85,7 @@ var _ = Describe("PageCache", func() {
 			pageCache := cache.New(dbPath)
 			err = pageCache.Open()
 			Expect(err).ToNot(HaveOccurred())
+			defer pageCache.Close()
 
 			err = pageCache.AddPage(fakeURL, fakeCacheKey, fakePage)
 			Expect(err).ToNot(HaveOccurred())
@@ -105,6 +108,7 @@ var _ = Describe("PageCache", func() {
 			pageCache := cache.New(dbPath)
 			err = pageCache.Open()
 			Expect(err).ToNot(HaveOccurred())
+			defer pageCache.Close()
 
 			cacheKey, err := pageCache.KeyForPage(fakeURL)
 			Expect(err).ToNot(HaveOccurred())
@@ -128,6 +132,7 @@ var _ = Describe("PageCache", func() {
 			pageCache := cache.New(dbPath)
 			err = pageCache.Open()
 			Expect(err).ToNot(HaveOccurred())
+			defer pageCache.Close()
 
 			err = pageCache.AddPage(fakeURL, fakeCacheKey, fakePage)
 			Expect(err).ToNot(HaveOccurred())
@@ -151,6 +156,7 @@ var _ = Describe("PageCache", func() {
 			pageCache := cache.New(dbPath)
 			err = pageCache.Open()
 			Expect(err).ToNot(HaveOccurred())
+			defer pageCache.Close()
 
 			_, err = bolt.Open(dbPath, 0600, &bolt.Options{Timeout: 10 * time.Millisecond})
 			Expect(err).To(MatchError("timeout"))

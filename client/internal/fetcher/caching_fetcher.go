@@ -12,16 +12,19 @@ import (
 var _ fetcher.Fetcher = &DefaultCachingFetcher{}
 
 const (
-	cacheRequestHeader  = "If-None-Match"
-	cacheResponseHeader = "ETag"
+	// CacheRequestHeader is the header to supply page caching information when making a request
+	CacheRequestHeader = "If-None-Match"
+
+	// CacheResponseHeader is the expected header when receiving an HTTP response
+	CacheResponseHeader = "ETag"
 )
 
 // NewCachingFetcher returns the default caching fetcher which understands how to use
 // an authorization header to authenticate HTTP requests
-func NewCachingFetcher(accessToken string, pageCache cache.PageCache) fetcher.Fetcher {
+func NewCachingFetcher(accessToken string, pageCache cache.Page) fetcher.Fetcher {
 	return &DefaultCachingFetcher{
-		cache:       pageCache,
-		fetcher:     NewFetcher(accessToken),
+		Cache:       pageCache,
+		Fetcher:     NewFetcher(accessToken),
 		accessToken: accessToken,
 	}
 }
@@ -29,19 +32,19 @@ func NewCachingFetcher(accessToken string, pageCache cache.PageCache) fetcher.Fe
 // DefaultCachingFetcher uses a paginator to fetch all reachable pages from a base URL
 // and uses a PageCache to store previously fetched pages
 type DefaultCachingFetcher struct {
-	cache       cache.PageCache
-	fetcher     fetcher.Fetcher
+	Cache       cache.Page
+	Fetcher     fetcher.Fetcher
 	accessToken string
 }
 
 // Fetch fetches all pages reachable from url, according to the PaginationFunc
 func (f *DefaultCachingFetcher) Fetch(url string) ([]byte, error) {
-	err := f.cache.Open() // make sure the cache is open before attempting to use it, relies on PageCache.Open() being idempotent
+	err := f.Cache.Open() // make sure the cache is open before attempting to use it, relies on PageCache.Open() being idempotent
 	if err != nil {
 		return nil, err
 	}
 
-	cacheKey, err := f.cache.KeyForPage(url)
+	cacheKey, err := f.Cache.KeyForPage(url)
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +55,7 @@ func (f *DefaultCachingFetcher) Fetch(url string) ([]byte, error) {
 	}
 
 	if contentUnchanged {
-		cachedPage, cacheFetchErr := f.cache.FetchPageByKey(cacheKey)
+		cachedPage, cacheFetchErr := f.Cache.FetchPageByKey(cacheKey)
 		if cacheFetchErr != nil {
 			return nil, cacheFetchErr
 		}
@@ -60,12 +63,12 @@ func (f *DefaultCachingFetcher) Fetch(url string) ([]byte, error) {
 		return cachedPage, nil
 	}
 
-	updatedPage, err := f.fetcher.Fetch(url)
+	updatedPage, err := f.Fetcher.Fetch(url)
 	if err != nil {
 		return nil, err
 	}
 
-	err = f.cache.AddPage(url, updatedCacheKey, updatedPage)
+	err = f.Cache.AddPage(url, updatedCacheKey, updatedPage)
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +88,7 @@ func (f *DefaultCachingFetcher) pageContentUnchanged(url string, etag string) (s
 	}
 
 	req.Header.Set(authorizationHeader, fmt.Sprintf("token %s", f.accessToken))
-	req.Header.Set(cacheRequestHeader, etag)
+	req.Header.Set(CacheRequestHeader, etag)
 	resp, err := c.Do(req)
 	if err != nil {
 		return "", false, err
@@ -93,7 +96,12 @@ func (f *DefaultCachingFetcher) pageContentUnchanged(url string, etag string) (s
 
 	defer resp.Body.Close()
 	unchanged := (resp.StatusCode == http.StatusNotModified)
-	currentEtag := resp.Header.Get(cacheResponseHeader)
+	currentEtag := resp.Header.Get(CacheResponseHeader)
 
 	return currentEtag, unchanged, nil
+}
+
+// Done will close the cache and make the fetcher unusable
+func (f *DefaultCachingFetcher) Done() error {
+	return f.Cache.Close()
 }

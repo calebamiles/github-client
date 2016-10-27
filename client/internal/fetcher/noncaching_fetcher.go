@@ -19,9 +19,9 @@ const (
 
 // NewFetcher returns the default fetcher which understands how to use
 // an authorization header to authenticate HTTP requests
-func NewFetcher(AccessToken string) fetcher.Fetcher {
+func NewFetcher(accessToken string) fetcher.Fetcher {
 	return &DefaultFetcher{
-		AccessToken: AccessToken,
+		AccessToken: accessToken,
 		Paginate:    paginator.PaginateGitHubResponse,
 	}
 }
@@ -78,3 +78,6 @@ func (f *DefaultFetcher) Fetch(url string) ([]byte, error) {
 
 	return joinedPages, nil
 }
+
+// nothing to close here, so NoOp
+func (f *DefaultFetcher) Done() error { return nil }

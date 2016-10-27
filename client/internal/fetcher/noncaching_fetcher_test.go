@@ -21,19 +21,16 @@ const (
 
 var _ = Describe("DefaultFetcher", func() {
 	It("uses a pagination function to crawl through reachable pages from a base URL", func() {
-		handler := sendTwoPagesOfResults()
+		handler := newPageSender()
 
 		s := httptest.NewServer(handler)
 		defer s.Close()
 
-		fetcher := fetcher.DefaultFetcher{
+		f := fetcher.DefaultFetcher{
 			Paginate: fakePaginator,
 		}
 
-		serverURL, err := url.Parse(s.URL)
-		Expect(err).ToNot(HaveOccurred())
-
-		fetchedPages, err := fetcher.Fetch(serverURL.String())
+		fetchedPages, err := f.Fetch(s.URL)
 		Expect(err).ToNot(HaveOccurred())
 
 		serverHits := atomic.LoadUint32(&handler.requests)
@@ -54,14 +51,14 @@ var _ = Describe("DefaultFetcher", func() {
 		s := httptest.NewServer(handler)
 		defer s.Close()
 
-		fetcher := fetcher.DefaultFetcher{
+		f := fetcher.DefaultFetcher{
 			Paginate: fakePaginator,
 		}
 
 		serverURL, err := url.Parse(s.URL)
 		Expect(err).ToNot(HaveOccurred())
 
-		_, err = fetcher.Fetch(serverURL.String())
+		_, err = f.Fetch(serverURL.String())
 		Expect(err).To(HaveOccurred())
 		Expect(err.Error()).To(ContainSubstring("got unexpected status code: 429"))
 	})
@@ -75,22 +72,22 @@ type testPage struct {
 	Content string `json:"content"`
 }
 
-type sendNextPage struct {
+type multiplePageSender struct {
 	requests       uint32
 	pathsRequested map[string]bool
 }
 
-func sendTwoPagesOfResults() *sendNextPage {
-	return &sendNextPage{
+func newPageSender() *multiplePageSender {
+	return &multiplePageSender{
 		0,
-		map[string]bool{},
+		make(map[string]bool),
 	}
 }
 
-func (handler *sendNextPage) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+func (handler *multiplePageSender) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	atomic.AddUint32(&handler.requests, 1)
 
-	// the client is supposed to be following a new link so return immediately if that isn't true
+	// the client is supposed` to be following a new link so return immediately if that isn't true
 	if handler.pathsRequested[req.RequestURI] {
 		return
 	}
@@ -99,7 +96,6 @@ func (handler *sendNextPage) ServeHTTP(w http.ResponseWriter, req *http.Request)
 
 	if atomic.LoadUint32(&handler.requests) < numberOfPagesToServe {
 		w.Header().Set(nextPageHeaderKey, fmt.Sprintf("http://%s/%d", req.Host, atomic.LoadUint32(&handler.requests)))
-
 	}
 
 	responseString := fmt.Sprintf("there have been: %d requests", atomic.LoadUint32(&handler.requests))

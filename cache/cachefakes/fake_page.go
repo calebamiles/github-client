@@ -7,7 +7,7 @@ import (
 	"github.com/calebamiles/github-client/cache"
 )
 
-type FakePageCache struct {
+type FakePage struct {
 	KeyForPageStub        func(pageURL string) (cacheKey string, err error)
 	keyForPageMutex       sync.RWMutex
 	keyForPageArgsForCall []struct {
@@ -52,7 +52,7 @@ type FakePageCache struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakePageCache) KeyForPage(pageURL string) (cacheKey string, err error) {
+func (fake *FakePage) KeyForPage(pageURL string) (cacheKey string, err error) {
 	fake.keyForPageMutex.Lock()
 	fake.keyForPageArgsForCall = append(fake.keyForPageArgsForCall, struct {
 		pageURL string
@@ -66,19 +66,19 @@ func (fake *FakePageCache) KeyForPage(pageURL string) (cacheKey string, err erro
 	}
 }
 
-func (fake *FakePageCache) KeyForPageCallCount() int {
+func (fake *FakePage) KeyForPageCallCount() int {
 	fake.keyForPageMutex.RLock()
 	defer fake.keyForPageMutex.RUnlock()
 	return len(fake.keyForPageArgsForCall)
 }
 
-func (fake *FakePageCache) KeyForPageArgsForCall(i int) string {
+func (fake *FakePage) KeyForPageArgsForCall(i int) string {
 	fake.keyForPageMutex.RLock()
 	defer fake.keyForPageMutex.RUnlock()
 	return fake.keyForPageArgsForCall[i].pageURL
 }
 
-func (fake *FakePageCache) KeyForPageReturns(result1 string, result2 error) {
+func (fake *FakePage) KeyForPageReturns(result1 string, result2 error) {
 	fake.KeyForPageStub = nil
 	fake.keyForPageReturns = struct {
 		result1 string
@@ -86,7 +86,7 @@ func (fake *FakePageCache) KeyForPageReturns(result1 string, result2 error) {
 	}{result1, result2}
 }
 
-func (fake *FakePageCache) FetchPageByKey(cacheKey string) (page []byte, err error) {
+func (fake *FakePage) FetchPageByKey(cacheKey string) (page []byte, err error) {
 	fake.fetchPageByKeyMutex.Lock()
 	fake.fetchPageByKeyArgsForCall = append(fake.fetchPageByKeyArgsForCall, struct {
 		cacheKey string
@@ -100,19 +100,19 @@ func (fake *FakePageCache) FetchPageByKey(cacheKey string) (page []byte, err err
 	}
 }
 
-func (fake *FakePageCache) FetchPageByKeyCallCount() int {
+func (fake *FakePage) FetchPageByKeyCallCount() int {
 	fake.fetchPageByKeyMutex.RLock()
 	defer fake.fetchPageByKeyMutex.RUnlock()
 	return len(fake.fetchPageByKeyArgsForCall)
 }
 
-func (fake *FakePageCache) FetchPageByKeyArgsForCall(i int) string {
+func (fake *FakePage) FetchPageByKeyArgsForCall(i int) string {
 	fake.fetchPageByKeyMutex.RLock()
 	defer fake.fetchPageByKeyMutex.RUnlock()
 	return fake.fetchPageByKeyArgsForCall[i].cacheKey
 }
 
-func (fake *FakePageCache) FetchPageByKeyReturns(result1 []byte, result2 error) {
+func (fake *FakePage) FetchPageByKeyReturns(result1 []byte, result2 error) {
 	fake.FetchPageByKeyStub = nil
 	fake.fetchPageByKeyReturns = struct {
 		result1 []byte
@@ -120,7 +120,7 @@ func (fake *FakePageCache) FetchPageByKeyReturns(result1 []byte, result2 error) 
 	}{result1, result2}
 }
 
-func (fake *FakePageCache) AddPage(pageURL string, cacheKey string, page []byte) error {
+func (fake *FakePage) AddPage(pageURL string, cacheKey string, page []byte) error {
 	var pageCopy []byte
 	if page != nil {
 		pageCopy = make([]byte, len(page))
@@ -141,26 +141,26 @@ func (fake *FakePageCache) AddPage(pageURL string, cacheKey string, page []byte)
 	}
 }
 
-func (fake *FakePageCache) AddPageCallCount() int {
+func (fake *FakePage) AddPageCallCount() int {
 	fake.addPageMutex.RLock()
 	defer fake.addPageMutex.RUnlock()
 	return len(fake.addPageArgsForCall)
 }
 
-func (fake *FakePageCache) AddPageArgsForCall(i int) (string, string, []byte) {
+func (fake *FakePage) AddPageArgsForCall(i int) (string, string, []byte) {
 	fake.addPageMutex.RLock()
 	defer fake.addPageMutex.RUnlock()
 	return fake.addPageArgsForCall[i].pageURL, fake.addPageArgsForCall[i].cacheKey, fake.addPageArgsForCall[i].page
 }
 
-func (fake *FakePageCache) AddPageReturns(result1 error) {
+func (fake *FakePage) AddPageReturns(result1 error) {
 	fake.AddPageStub = nil
 	fake.addPageReturns = struct {
 		result1 error
 	}{result1}
 }
 
-func (fake *FakePageCache) Open() error {
+func (fake *FakePage) Open() error {
 	fake.openMutex.Lock()
 	fake.openArgsForCall = append(fake.openArgsForCall, struct{}{})
 	fake.recordInvocation("Open", []interface{}{})
@@ -172,20 +172,20 @@ func (fake *FakePageCache) Open() error {
 	}
 }
 
-func (fake *FakePageCache) OpenCallCount() int {
+func (fake *FakePage) OpenCallCount() int {
 	fake.openMutex.RLock()
 	defer fake.openMutex.RUnlock()
 	return len(fake.openArgsForCall)
 }
 
-func (fake *FakePageCache) OpenReturns(result1 error) {
+func (fake *FakePage) OpenReturns(result1 error) {
 	fake.OpenStub = nil
 	fake.openReturns = struct {
 		result1 error
 	}{result1}
 }
 
-func (fake *FakePageCache) Close() error {
+func (fake *FakePage) Close() error {
 	fake.closeMutex.Lock()
 	fake.closeArgsForCall = append(fake.closeArgsForCall, struct{}{})
 	fake.recordInvocation("Close", []interface{}{})
@@ -197,20 +197,20 @@ func (fake *FakePageCache) Close() error {
 	}
 }
 
-func (fake *FakePageCache) CloseCallCount() int {
+func (fake *FakePage) CloseCallCount() int {
 	fake.closeMutex.RLock()
 	defer fake.closeMutex.RUnlock()
 	return len(fake.closeArgsForCall)
 }
 
-func (fake *FakePageCache) CloseReturns(result1 error) {
+func (fake *FakePage) CloseReturns(result1 error) {
 	fake.CloseStub = nil
 	fake.closeReturns = struct {
 		result1 error
 	}{result1}
 }
 
-func (fake *FakePageCache) Invocations() map[string][][]interface{} {
+func (fake *FakePage) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.keyForPageMutex.RLock()
@@ -226,7 +226,7 @@ func (fake *FakePageCache) Invocations() map[string][][]interface{} {
 	return fake.invocations
 }
 
-func (fake *FakePageCache) recordInvocation(key string, args []interface{}) {
+func (fake *FakePage) recordInvocation(key string, args []interface{}) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
 	if fake.invocations == nil {
@@ -238,4 +238,4 @@ func (fake *FakePageCache) recordInvocation(key string, args []interface{}) {
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
 
-var _ cache.PageCache = new(FakePageCache)
+var _ cache.Page = new(FakePage)

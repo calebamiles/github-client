@@ -12,7 +12,7 @@ import (
 	"github.com/boltdb/bolt"
 )
 
-type PageCache interface {
+type Page interface {
 	KeyForPage(pageURL string) (cacheKey string, err error)
 	FetchPageByKey(cacheKey string) (page []byte, err error)
 	AddPage(pageURL string, cacheKey string, page []byte) error
@@ -20,8 +20,8 @@ type PageCache interface {
 	Close() error
 }
 
-// New returns a new PageCache or an error relating to opening the datastore
-func New(datastorePath string) PageCache {
+// New returns a new Page
+func New(datastorePath string) Page {
 	return &pageCache{
 		dbPath: datastorePath,
 	}
@@ -39,6 +39,7 @@ type pageCache struct {
 	closeOnce sync.Once
 }
 
+// AddPage adds a page to the cache
 func (c *pageCache) AddPage(pageURL string, cacheKey string, page []byte) error {
 	return c.db.Batch(func(tx *bolt.Tx) error {
 		var commitErr error
@@ -80,6 +81,7 @@ func (c *pageCache) AddPage(pageURL string, cacheKey string, page []byte) error 
 	})
 }
 
+// KeyForPage returns the cache key (etag) associated with the provied URL
 func (c *pageCache) KeyForPage(pageURL string) (string, error) {
 	var cacheKey string
 
@@ -109,6 +111,8 @@ func (c *pageCache) KeyForPage(pageURL string) (string, error) {
 	return cacheKey, nil
 }
 
+// FetchPageByKey returns the cached page for a given cache key (etag)
+// FetchPageByKey returns an error if there is no cached page for the provided key
 func (c *pageCache) FetchPageByKey(cacheKey string) ([]byte, error) {
 	var fetchedPage []byte
 
@@ -133,6 +137,7 @@ func (c *pageCache) FetchPageByKey(cacheKey string) ([]byte, error) {
 	return fetchedPage, nil
 }
 
+// Open opens the underlying datastore at most once
 func (c *pageCache) Open() error {
 	var openErr error
 	var db *bolt.DB
@@ -169,8 +174,15 @@ func (c *pageCache) Open() error {
 	return openErr
 }
 
+// Close closes the underlying datastore at most once
 func (c *pageCache) Close() error {
 	var closeErr error
+
+	// ensure the database was opened at least once to prevent panic
+	closeErr = c.Open()
+	if closeErr != nil {
+		return closeErr
+	}
 
 	c.closeOnce.Do(func() {
 		closeErr = c.db.Close()

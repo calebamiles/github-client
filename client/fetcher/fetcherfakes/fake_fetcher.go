@@ -17,6 +17,12 @@ type FakeFetcher struct {
 		result1 []byte
 		result2 error
 	}
+	DoneStub        func() error
+	doneMutex       sync.RWMutex
+	doneArgsForCall []struct{}
+	doneReturns     struct {
+		result1 error
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
@@ -55,11 +61,38 @@ func (fake *FakeFetcher) FetchReturns(result1 []byte, result2 error) {
 	}{result1, result2}
 }
 
+func (fake *FakeFetcher) Done() error {
+	fake.doneMutex.Lock()
+	fake.doneArgsForCall = append(fake.doneArgsForCall, struct{}{})
+	fake.recordInvocation("Done", []interface{}{})
+	fake.doneMutex.Unlock()
+	if fake.DoneStub != nil {
+		return fake.DoneStub()
+	} else {
+		return fake.doneReturns.result1
+	}
+}
+
+func (fake *FakeFetcher) DoneCallCount() int {
+	fake.doneMutex.RLock()
+	defer fake.doneMutex.RUnlock()
+	return len(fake.doneArgsForCall)
+}
+
+func (fake *FakeFetcher) DoneReturns(result1 error) {
+	fake.DoneStub = nil
+	fake.doneReturns = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *FakeFetcher) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.fetchMutex.RLock()
 	defer fake.fetchMutex.RUnlock()
+	fake.doneMutex.RLock()
+	defer fake.doneMutex.RUnlock()
 	return fake.invocations
 }
 

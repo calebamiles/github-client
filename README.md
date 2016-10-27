@@ -9,10 +9,17 @@ if the caller knows how to properly handle the result. Consumers should only
 ever create a client via
 
 ```
-client.New(repositoryOwner, repositoryName, accessToken)
+client.New(repositoryOwner, repositoryName, accessToken, pathToCacheFile)
 ```
 
-no other way of creating a client.Client is supported. In order to help consumers
+or 
+
+```
+client.NewNonCachingClient(repositoryOwner, repositoryName, accessToken)
+```
+
+no other way of creating a client.Client is supported. If `pathToCacheFile` is an empty
+string than a temporary file will be created. In order to help consumers
 test against this libraries fakes generated with [Counterfeiter](https://github.com/maxbrunsfeld/counterfeiter)
 have been provided for all major interfaces in `<packagename>/<packageName>fakes`.
 This library should be considered to be very experimental and probably should not

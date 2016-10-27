@@ -1,6 +1,11 @@
 package client
 
-import "github.com/calebamiles/github-client/client/fetcher"
+import (
+	"os"
+	"sync"
+
+	"github.com/calebamiles/github-client/client/fetcher"
+)
 
 const (
 	// DateFormat is an ISO 8601 formatish format
@@ -12,7 +17,29 @@ const (
 
 // DefaultClient is returned by client.New()
 type DefaultClient struct {
-	Fetcher   fetcher.Fetcher
-	RepoOwner string
-	RepoName  string
+	Fetcher           fetcher.Fetcher
+	RepoOwner         string
+	RepoName          string
+	TempCacheFilePath string
+	doneOnce          sync.Once
+}
+
+func (c *DefaultClient) Done() error {
+	var err error
+
+	c.doneOnce.Do(func() {
+		err = c.Fetcher.Done()
+		if err != nil {
+			return
+		}
+
+		if c.TempCacheFilePath != "" {
+			err = os.Remove(c.TempCacheFilePath)
+			if err != nil {
+				return
+			}
+		}
+	})
+
+	return err
 }
