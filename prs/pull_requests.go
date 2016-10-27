@@ -2,18 +2,24 @@ package prs
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
-	"strings"
 	"time"
 
-	"github.com/calebamiles/github-client/handle"
+	"github.com/calebamiles/github-client/commits"
 	"github.com/calebamiles/github-client/labels"
 	"github.com/calebamiles/github-client/milestone"
-	"github.com/calebamiles/github-client/state"
 )
 
-// A PullRequestWithoutComments contains basic information about a GitHub pull request
+// A FileChange represents a diff to a file associated with a Pull Request
+type FileChange interface {
+	FileSHA() string
+	Filename() string
+	NumDeletions() int
+	NumAdditions() int
+	NumChanges() int
+}
+
+// A PullRequest contains information about a GitHub pull request
 type PullRequest interface {
 	ID() string
 	Author() string
@@ -21,19 +27,36 @@ type PullRequest interface {
 	Title() string
 	Open() bool
 	Merged() bool
-	Labels() []labels.Label
-	Milestone() milestone.Milestone
 	Reviewers() []string
+
 	CreatedAt() time.Time
 	UpdatedAt() time.Time
+	ClosedAt() time.Time
+	MergedAt() time.Time
+
 	String() string
 
-	//TODO add expensive methods for fetching richer objects here
-	NumberOfCommits() int
-	NumberOfAdditions() int
-	NumberOfDeletions() int
-	NumberOfChangedFiles() int
-	NumberOfComments() int
+	Commits() []commits.Commit
+	Comments() []comments.Comment
+	ReviewComments() []comments.ReviewComment
+	Labels() []labels.Label
+	Milestone() milestone.Milestone
+	FilesChanged() []FileChange
+}
+
+type PullFoo struct {
+	ID        string
+	Author    string
+	Body      string
+	Title     string
+	Open      bool
+	Merged    bool
+	Reviewers []string
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	ClosedAt  time.Time
+	MergedAt  time.Time
 }
 
 // New returns a slice of PullRequestWithoutComments from raw JSON
@@ -81,45 +104,29 @@ func New(rawJSON []byte) ([]PullRequest, error) {
 	return pulls, nil
 }
 
-type pullRequest struct {
-	Number                   int             `json:"number"`
-	State                    string          `json:"state"`
-	TitleString              string          `json:"title"`
-	BodyString               string          `json:"body"`
-	NumberOfCommentsJSON     int             `json:"comments"`
-	NumberOfCommitsJSON      int             `json:"commits"`
-	NumberOfAdditionsJSON    int             `json:"additions"`
-	NumberOfDeletionsJSON    int             `json:"deletions"`
-	NumberOfChangedFilesJSON int             `json:"changed_files"`
-	CreatedTime              time.Time       `json:"created_at"`
-	UpdatedTime              time.Time       `json:"updated_at"`
-	MergeTime                *time.Time      `json:"merged_at"` // `null` unless merged so make this a pointer to a time
-	Assignee                 handle.GitHub   `json:"assignee"`
-	AssigneeList             []handle.GitHub `json:"reviewers"`
-	MilestoneJSON            json.RawMessage `json:"milestone"`
-	handle.GitHub            `json:"user"`
+/*
+	TODO: decide how to build up a PR from here
+*/
 
-	labels    []labels.Label
-	milestone milestone.Milestone
-	reviewers []string
-}
-
-func (p *pullRequest) ID() string                     { return fmt.Sprintf("%d", p.Number) }
-func (p *pullRequest) Author() string                 { return p.GitHub.ID }
-func (p *pullRequest) Body() string                   { return p.BodyString }
-func (p *pullRequest) Title() string                  { return p.TitleString }
-func (p *pullRequest) Open() bool                     { return strings.EqualFold(p.State, state.Open) }
-func (p *pullRequest) Merged() bool                   { return !p.MergeTime.IsZero() }
-func (p *pullRequest) Labels() []labels.Label         { return p.labels }
-func (p *pullRequest) Milestone() milestone.Milestone { return p.milestone }
-func (p *pullRequest) Reviewers() []string            { return p.reviewers }
-func (p *pullRequest) CreatedAt() time.Time           { return p.CreatedTime }
-func (p *pullRequest) UpdatedAt() time.Time           { return p.UpdatedTime }
-
-func (p *pullRequest) NumberOfComments() int     { return p.NumberOfCommentsJSON }
-func (p *pullRequest) NumberOfCommits() int      { return p.NumberOfCommitsJSON }
-func (p *pullRequest) NumberOfAdditions() int    { return p.NumberOfAdditionsJSON }
-func (p *pullRequest) NumberOfDeletions() int    { return p.NumberOfDeletionsJSON }
-func (p *pullRequest) NumberOfChangedFiles() int { return p.NumberOfChangedFilesJSON }
-
-func (p *pullRequest) String() string { return fmt.Sprintf("%d", p.Number) }
+// type pullRequest struct {
+// 	Number                   int             `json:"number"`
+// 	State                    string          `json:"state"`
+// 	TitleString              string          `json:"title"`
+// 	BodyString               string          `json:"body"`
+// 	NumberOfCommentsJSON     int             `json:"comments"`
+// 	NumberOfCommitsJSON      int             `json:"commits"`
+// 	NumberOfAdditionsJSON    int             `json:"additions"`
+// 	NumberOfDeletionsJSON    int             `json:"deletions"`
+// 	NumberOfChangedFilesJSON int             `json:"changed_files"`
+// 	CreatedTime              time.Time       `json:"created_at"`
+// 	UpdatedTime              time.Time       `json:"updated_at"`
+// 	MergeTime                *time.Time      `json:"merged_at"` // `null` unless merged so make this a pointer to a time
+// 	Assignee                 handle.GitHub   `json:"assignee"`
+// 	AssigneeList             []handle.GitHub `json:"reviewers"`
+// 	MilestoneJSON            json.RawMessage `json:"milestone"`
+// 	handle.GitHub            `json:"user"`
+//
+// 	labels    []labels.Label
+// 	milestone milestone.Milestone
+// 	reviewers []string
+// }

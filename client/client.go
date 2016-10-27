@@ -2,7 +2,6 @@ package client
 
 import (
 	"io/ioutil"
-	"time"
 
 	"github.com/calebamiles/github-client/cache"
 	"github.com/calebamiles/github-client/client/internal/client"
@@ -14,11 +13,10 @@ import (
 
 // A Client handles basic read only operations against the GitHub API
 type Client interface {
-	FetchCommitsToPathSince(string, time.Time) ([]commits.Commit, error)
-	FetchCommitsWithCommentsToPathSince(string, time.Time) ([]commits.Commit, error)
-	FetchIssuesSince(time.Time) ([]issues.Issue, error)
-	FetchPullRequestsSince(time.Time) ([]prs.PullRequest, error)
-	FetchPage(string) ([]byte, error)
+	FetchCommits() (commits []commits.Commit, err error)
+	FetchIssues() (issues []issues.Issue, err error)
+	FetchPullRequests() (pullRequests []prs.PullRequest, err error)
+	FetchPage(url string) (pageContent []byte, err error)
 	Done() error
 }
 
