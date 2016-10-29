@@ -13,11 +13,11 @@ import (
 type Milestone interface {
 	Open() bool
 	Description() string
-	IssuesOpen() int
-	IssuesClosed() int
-	Deadline() time.Time
+	NumIssuesOpen() int
+	NumIssuesClosed() int
 	Title() string
 	String() string
+	Deadline() time.Time
 }
 
 // New returns a Milestone from raw JSON
@@ -50,10 +50,10 @@ type milestone struct {
 	closedIssues      int
 }
 
-func (m *milestone) Open() bool          { return strings.EqualFold(m.StateString, state.Open) }
-func (m *milestone) Description() string { return m.DescriptionString }
-func (m *milestone) IssuesOpen() int     { return m.OpenIssuesInt }
-func (m *milestone) IssuesClosed() int   { return m.ClosedIssuesInt }
-func (m *milestone) Deadline() time.Time { return m.DueOn }
-func (m *milestone) Title() string       { return m.TitleString }
-func (m *milestone) String() string      { return m.TitleString }
+func (m *milestone) Open() bool           { return strings.EqualFold(m.StateString, state.Open) }
+func (m *milestone) Description() string  { return m.DescriptionString }
+func (m *milestone) NumIssuesOpen() int   { return m.OpenIssuesInt }
+func (m *milestone) NumIssuesClosed() int { return m.ClosedIssuesInt }
+func (m *milestone) Deadline() time.Time  { return m.DueOn }
+func (m *milestone) Title() string        { return m.TitleString }
+func (m *milestone) String() string       { return m.TitleString }

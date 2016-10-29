@@ -12,6 +12,11 @@ import (
 	"github.com/boltdb/bolt"
 )
 
+/*
+	TODO move this cache into an internal package since it's only ever used
+	by internal code and probably isn't meaningful to consumers of the library
+*/
+
 type Page interface {
 	KeyForPage(pageURL string) (cacheKey string, err error)
 	FetchPageByKey(cacheKey string) (page []byte, err error)

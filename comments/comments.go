@@ -12,6 +12,8 @@ type Comment interface {
 	Body() string
 }
 
+type ReviewComment interface{}
+
 // New returns a list of Comment from raw JSON
 func New(rawJSON []byte) ([]Comment, error) {
 	var comments []Comment

@@ -1,4 +1,4 @@
-package prs_test
+package file_test
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestPrs(t *testing.T) {
+func TestFile(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Pull Requests Suite")
+	RunSpecs(t, "File Suite")
 }

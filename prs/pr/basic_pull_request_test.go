@@ -1,20 +1,20 @@
-package prs_test
+package pr_test
 
 import (
 	"encoding/json"
 	"time"
 
-	"github.com/calebamiles/github-client/prs"
-	"github.com/calebamiles/github-client/prs/prsfakes"
+	"github.com/calebamiles/github-client/prs/pr"
+	"github.com/calebamiles/github-client/prs/pr/prfakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 // ensure our fakes can be used by consumers if desired
-var _ prs.PullRequest = &prsfakes.FakePullRequest{}
+var _ pr.BasicPullRequest = &prfakes.FakeBasicPullRequest{}
 
 var _ = Describe("building pull requests from JSON", func() {
-	Describe("New", func() {
+	Describe("NewBasicPullRequest", func() {
 		It("builds a slice of PullRequest from raw JSON", func() {
 			ts := []times{}
 			err := json.Unmarshal([]byte(pullsStub), &ts)
@@ -22,21 +22,19 @@ var _ = Describe("building pull requests from JSON", func() {
 			Expect(ts).To(HaveLen(1))
 			t := ts[0]
 
-			pulls, err := prs.New([]byte(pullsStub))
+			pull, err := pr.NewBasicPullRequest(json.RawMessage(pullsStub))
 			Expect(err).ToNot(HaveOccurred())
-			Expect(pulls).To(HaveLen(1))
-			pr := pulls[0]
 
-			Expect(pr.Author()).To(Equal("dgoodwin"))
-			Expect(pr.Body()).To(ContainSubstring("Thanks for sending a pull request!"))
-			Expect(pr.CreatedAt()).To(Equal(t.CreatedAt))
-			Expect(pr.UpdatedAt()).To(Equal(t.UpdatedAt))
-			Expect(pr.Merged()).To(BeFalse())
-			Expect(pr.Open()).To(BeTrue())
-			Expect(pr.Title()).To(Equal("kubeadm: Pre-pull images to limit time waiting for control plane."))
-			Expect(pr.Reviewers()).To(HaveLen(1))
-			Expect(pr.Reviewers()).To(ConsistOf("errordeveloper"))
-			Expect(pr.Milestone().Title()).To(BeEmpty())
+			Expect(pull.Author()).To(Equal("dgoodwin"))
+			Expect(pull.Body()).To(ContainSubstring("Thanks for sending a pull request!"))
+			Expect(pull.CreatedAt()).To(Equal(t.CreatedAt))
+			Expect(pull.UpdatedAt()).To(Equal(t.UpdatedAt))
+			Expect(pull.Merged()).To(BeFalse())
+			Expect(pull.Open()).To(BeTrue())
+			Expect(pull.Title()).To(Equal("kubeadm: Pre-pull images to limit time waiting for control plane."))
+			Expect(pull.Reviewers()).To(HaveLen(1))
+			Expect(pull.Reviewers()).To(ConsistOf("errordeveloper"))
+			Expect(pull.Milestone().Title()).To(BeEmpty())
 		})
 	})
 })

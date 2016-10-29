@@ -3,25 +3,28 @@ package types
 import "time"
 
 /*
-  Scratch space for working out data models, delete this when done
+	TODO:
+	- add BasicPullRequest back
+	- add New(BasicPullRequest, []comments.Comment, []comments.ReviewComment, []commits.Commit, []file.Change) PullRequest ? (maybe create subpackage for proper pluralization)
+	- update client to fetch additional fields
+	- check if richer model should be returned for issues
+	-
 */
 
-type FileChange interface {
-	FileSHA() string
-	Filename() string
-	NumDeletions() int
-	NumAdditions() int
-	NumChanges() int
-}
+/*
+  Scratch space for working out data models, delete this when done
+*/
 
 type Commit interface {
 	SHA() string
 	AuthorID() string
 	AuthorEmail() string
-	Committer() string
+	CommitterID() string
 	Message() string
 	Date() time.Time
 	ParentSHAs() []string
+
+	Comments() []Comment
 }
 
 type Comment interface {
@@ -37,20 +40,4 @@ type ReviewComment interface {
 	Filename() string
 	CommitSHA() string
 	OriginalCommitSHA() string
-}
-
-type Milestone interface {
-	Title() string
-	Description() string
-	Id() int
-	Number() int
-
-	NumOpenIssues() int
-	NumClosedIssues() int
-	Open() bool
-
-	CreatedAt() time.Time
-	UpdatedAt() time.Time
-	ClosedAt() time.Time
-	DueAt() time.Time
 }

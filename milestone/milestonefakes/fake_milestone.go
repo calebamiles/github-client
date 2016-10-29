@@ -21,23 +21,17 @@ type FakeMilestone struct {
 	descriptionReturns     struct {
 		result1 string
 	}
-	IssuesOpenStub        func() int
-	issuesOpenMutex       sync.RWMutex
-	issuesOpenArgsForCall []struct{}
-	issuesOpenReturns     struct {
+	NumIssuesOpenStub        func() int
+	numIssuesOpenMutex       sync.RWMutex
+	numIssuesOpenArgsForCall []struct{}
+	numIssuesOpenReturns     struct {
 		result1 int
 	}
-	IssuesClosedStub        func() int
-	issuesClosedMutex       sync.RWMutex
-	issuesClosedArgsForCall []struct{}
-	issuesClosedReturns     struct {
+	NumIssuesClosedStub        func() int
+	numIssuesClosedMutex       sync.RWMutex
+	numIssuesClosedArgsForCall []struct{}
+	numIssuesClosedReturns     struct {
 		result1 int
-	}
-	DeadlineStub        func() time.Time
-	deadlineMutex       sync.RWMutex
-	deadlineArgsForCall []struct{}
-	deadlineReturns     struct {
-		result1 time.Time
 	}
 	TitleStub        func() string
 	titleMutex       sync.RWMutex
@@ -50,6 +44,12 @@ type FakeMilestone struct {
 	stringArgsForCall []struct{}
 	stringReturns     struct {
 		result1 string
+	}
+	DeadlineStub        func() time.Time
+	deadlineMutex       sync.RWMutex
+	deadlineArgsForCall []struct{}
+	deadlineReturns     struct {
+		result1 time.Time
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
@@ -105,78 +105,53 @@ func (fake *FakeMilestone) DescriptionReturns(result1 string) {
 	}{result1}
 }
 
-func (fake *FakeMilestone) IssuesOpen() int {
-	fake.issuesOpenMutex.Lock()
-	fake.issuesOpenArgsForCall = append(fake.issuesOpenArgsForCall, struct{}{})
-	fake.recordInvocation("IssuesOpen", []interface{}{})
-	fake.issuesOpenMutex.Unlock()
-	if fake.IssuesOpenStub != nil {
-		return fake.IssuesOpenStub()
+func (fake *FakeMilestone) NumIssuesOpen() int {
+	fake.numIssuesOpenMutex.Lock()
+	fake.numIssuesOpenArgsForCall = append(fake.numIssuesOpenArgsForCall, struct{}{})
+	fake.recordInvocation("NumIssuesOpen", []interface{}{})
+	fake.numIssuesOpenMutex.Unlock()
+	if fake.NumIssuesOpenStub != nil {
+		return fake.NumIssuesOpenStub()
 	} else {
-		return fake.issuesOpenReturns.result1
+		return fake.numIssuesOpenReturns.result1
 	}
 }
 
-func (fake *FakeMilestone) IssuesOpenCallCount() int {
-	fake.issuesOpenMutex.RLock()
-	defer fake.issuesOpenMutex.RUnlock()
-	return len(fake.issuesOpenArgsForCall)
+func (fake *FakeMilestone) NumIssuesOpenCallCount() int {
+	fake.numIssuesOpenMutex.RLock()
+	defer fake.numIssuesOpenMutex.RUnlock()
+	return len(fake.numIssuesOpenArgsForCall)
 }
 
-func (fake *FakeMilestone) IssuesOpenReturns(result1 int) {
-	fake.IssuesOpenStub = nil
-	fake.issuesOpenReturns = struct {
+func (fake *FakeMilestone) NumIssuesOpenReturns(result1 int) {
+	fake.NumIssuesOpenStub = nil
+	fake.numIssuesOpenReturns = struct {
 		result1 int
 	}{result1}
 }
 
-func (fake *FakeMilestone) IssuesClosed() int {
-	fake.issuesClosedMutex.Lock()
-	fake.issuesClosedArgsForCall = append(fake.issuesClosedArgsForCall, struct{}{})
-	fake.recordInvocation("IssuesClosed", []interface{}{})
-	fake.issuesClosedMutex.Unlock()
-	if fake.IssuesClosedStub != nil {
-		return fake.IssuesClosedStub()
+func (fake *FakeMilestone) NumIssuesClosed() int {
+	fake.numIssuesClosedMutex.Lock()
+	fake.numIssuesClosedArgsForCall = append(fake.numIssuesClosedArgsForCall, struct{}{})
+	fake.recordInvocation("NumIssuesClosed", []interface{}{})
+	fake.numIssuesClosedMutex.Unlock()
+	if fake.NumIssuesClosedStub != nil {
+		return fake.NumIssuesClosedStub()
 	} else {
-		return fake.issuesClosedReturns.result1
+		return fake.numIssuesClosedReturns.result1
 	}
 }
 
-func (fake *FakeMilestone) IssuesClosedCallCount() int {
-	fake.issuesClosedMutex.RLock()
-	defer fake.issuesClosedMutex.RUnlock()
-	return len(fake.issuesClosedArgsForCall)
+func (fake *FakeMilestone) NumIssuesClosedCallCount() int {
+	fake.numIssuesClosedMutex.RLock()
+	defer fake.numIssuesClosedMutex.RUnlock()
+	return len(fake.numIssuesClosedArgsForCall)
 }
 
-func (fake *FakeMilestone) IssuesClosedReturns(result1 int) {
-	fake.IssuesClosedStub = nil
-	fake.issuesClosedReturns = struct {
+func (fake *FakeMilestone) NumIssuesClosedReturns(result1 int) {
+	fake.NumIssuesClosedStub = nil
+	fake.numIssuesClosedReturns = struct {
 		result1 int
-	}{result1}
-}
-
-func (fake *FakeMilestone) Deadline() time.Time {
-	fake.deadlineMutex.Lock()
-	fake.deadlineArgsForCall = append(fake.deadlineArgsForCall, struct{}{})
-	fake.recordInvocation("Deadline", []interface{}{})
-	fake.deadlineMutex.Unlock()
-	if fake.DeadlineStub != nil {
-		return fake.DeadlineStub()
-	} else {
-		return fake.deadlineReturns.result1
-	}
-}
-
-func (fake *FakeMilestone) DeadlineCallCount() int {
-	fake.deadlineMutex.RLock()
-	defer fake.deadlineMutex.RUnlock()
-	return len(fake.deadlineArgsForCall)
-}
-
-func (fake *FakeMilestone) DeadlineReturns(result1 time.Time) {
-	fake.DeadlineStub = nil
-	fake.deadlineReturns = struct {
-		result1 time.Time
 	}{result1}
 }
 
@@ -230,6 +205,31 @@ func (fake *FakeMilestone) StringReturns(result1 string) {
 	}{result1}
 }
 
+func (fake *FakeMilestone) Deadline() time.Time {
+	fake.deadlineMutex.Lock()
+	fake.deadlineArgsForCall = append(fake.deadlineArgsForCall, struct{}{})
+	fake.recordInvocation("Deadline", []interface{}{})
+	fake.deadlineMutex.Unlock()
+	if fake.DeadlineStub != nil {
+		return fake.DeadlineStub()
+	} else {
+		return fake.deadlineReturns.result1
+	}
+}
+
+func (fake *FakeMilestone) DeadlineCallCount() int {
+	fake.deadlineMutex.RLock()
+	defer fake.deadlineMutex.RUnlock()
+	return len(fake.deadlineArgsForCall)
+}
+
+func (fake *FakeMilestone) DeadlineReturns(result1 time.Time) {
+	fake.DeadlineStub = nil
+	fake.deadlineReturns = struct {
+		result1 time.Time
+	}{result1}
+}
+
 func (fake *FakeMilestone) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
@@ -237,16 +237,16 @@ func (fake *FakeMilestone) Invocations() map[string][][]interface{} {
 	defer fake.openMutex.RUnlock()
 	fake.descriptionMutex.RLock()
 	defer fake.descriptionMutex.RUnlock()
-	fake.issuesOpenMutex.RLock()
-	defer fake.issuesOpenMutex.RUnlock()
-	fake.issuesClosedMutex.RLock()
-	defer fake.issuesClosedMutex.RUnlock()
-	fake.deadlineMutex.RLock()
-	defer fake.deadlineMutex.RUnlock()
+	fake.numIssuesOpenMutex.RLock()
+	defer fake.numIssuesOpenMutex.RUnlock()
+	fake.numIssuesClosedMutex.RLock()
+	defer fake.numIssuesClosedMutex.RUnlock()
 	fake.titleMutex.RLock()
 	defer fake.titleMutex.RUnlock()
 	fake.stringMutex.RLock()
 	defer fake.stringMutex.RUnlock()
+	fake.deadlineMutex.RLock()
+	defer fake.deadlineMutex.RUnlock()
 	return fake.invocations
 }
 
