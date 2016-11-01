@@ -1,0 +1,63 @@
+syntax = "proto3";
+package serialization;
+
+import "google/protobuf/timestamp.proto";
+
+message CommitAuthor {
+   string github_id = 1;
+   string email = 2;
+   string name = 3;
+}
+
+message Commit {
+   string sha = 1;
+   google.protobuf.Timestamp date = 2;
+  repeated string parent_shas = 3;
+  repeated Comment comments = 4;
+}
+
+message Comment {
+   string author = 1;
+   string body = 2;
+   google.protobuf.Timestamp created_at = 3;
+   google.protobuf.Timestamp updated_at = 4;
+}
+
+message Label {
+   string name = 1;
+}
+
+message Milestone {
+   string title = 1;
+   string description = 2;
+   int32 num_issues_open = 3;
+   int32 num_issues_closeed = 4;
+   bool open = 5;
+}
+
+message FileChange {
+   string file_sha = 1;
+   string filename = 2;
+   int32 num_deletions = 3;
+   int32 num_additions = 4;
+   int32 num_changes = 5;
+}
+
+message PullRequest {
+   string id = 1;
+   string author = 2;
+   string body = 3;
+   string title = 4;
+   bool open  = 5;
+   bool merged = 6;
+   google.protobuf.Timestamp created_at = 7;
+   google.protobuf.Timestamp updated_at = 8;
+   google.protobuf.Timestamp closed_at = 9;
+   google.protobuf.Timestamp merged_at = 10;
+  repeated string reviewers = 11;
+   Milestone milestone = 12;
+  repeated Commit commmits = 13;
+  repeated Comment comments = 14;
+  repeated Label labels = 15;
+  repeated FileChange files_changed = 16;
+}

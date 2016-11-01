@@ -30,6 +30,7 @@ type BasicPullRequest interface {
 	CommentsURL() string
 	ReviewCommentsURL() string
 	FileChangeURL() string
+	URL() string
 
 	Milestone() milestone.Milestone
 
@@ -119,6 +120,7 @@ func (p *basicPullRequest) CreatedAt() time.Time           { return p.CreatedTim
 func (p *basicPullRequest) UpdatedAt() time.Time           { return p.UpdatedTime }
 func (p *basicPullRequest) ClosedAt() time.Time            { return p.ClosedTime }
 func (p *basicPullRequest) MergedAt() time.Time            { return p.ClosedTime }
+func (p *basicPullRequest) URL() string                    { return p.BaseAPIURL }
 func (p *basicPullRequest) CommitsURL() string             { return p.CommitsURLString }
 func (p *basicPullRequest) CommentsURL() string            { return p.CommentsURLString }
 func (p *basicPullRequest) ReviewCommentsURL() string      { return p.ReviewCommentsURLString }

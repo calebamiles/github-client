@@ -11,15 +11,20 @@ import (
 
 // A Commit represents basic information about a commit including comments
 type Commit interface {
-	CommitWithoutComments
+	SHA() string
+	Author() Author
+	Date() time.Time
+	ParentSHAs() []string
 	Comments() []comments.Comment
+
+	String() string
 }
 
 // A CommitWithoutComments provides basic information relating to a commit
 type CommitWithoutComments interface {
+	SHA() string
 	Author() Author
 	Date() time.Time
-	SHA() string
 	ParentSHAs() []string
 	CommentsURL() string
 	String() string

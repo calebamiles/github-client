@@ -10,6 +10,8 @@ import (
 type Comment interface {
 	Author() string
 	Body() string
+	CreatedAt() time.Time
+	UpdatedAt() time.Time
 }
 
 type ReviewComment interface{}
@@ -34,13 +36,15 @@ func New(rawJSON []byte) ([]Comment, error) {
 
 type comment struct {
 	BodyString    string    `json:"body"`
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at"`
+	CreatedAtTime time.Time `json:"created_at"`
+	UpdatedAtTime time.Time `json:"updated_at"`
 	commentAuthor `json:"user"`
 }
 
-func (c *comment) Author() string { return c.commentAuthor.GithubID }
-func (c *comment) Body() string   { return c.BodyString }
+func (c *comment) Author() string       { return c.commentAuthor.GithubID }
+func (c *comment) Body() string         { return c.BodyString }
+func (c *comment) UpdatedAt() time.Time { return c.UpdatedAtTime }
+func (c *comment) CreatedAt() time.Time { return c.CreatedAtTime }
 
 type commentAuthor struct {
 	GithubID string `json:"login"`

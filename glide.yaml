@@ -8,3 +8,8 @@ import:
 - package: github.com/boltdb/bolt
   subpackages:
   - '...'
+- package: github.com/golang/protobuf
+  subpackages:
+  - proto
+- package: gopkg.in/vmihailenco/msgpack.v2
+  version: ^2.7.3

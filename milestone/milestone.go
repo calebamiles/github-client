@@ -16,8 +16,9 @@ type Milestone interface {
 	NumIssuesOpen() int
 	NumIssuesClosed() int
 	Title() string
-	String() string
 	Deadline() time.Time
+
+	String() string
 }
 
 // New returns a Milestone from raw JSON

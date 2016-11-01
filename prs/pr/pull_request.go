@@ -27,7 +27,8 @@ type PullRequest interface {
 
 	Commits() []commits.Commit
 	Comments() []comments.Comment
-	ReviewComments() []comments.ReviewComment
+	// TODO add this back soon
+	// ReviewComments() []comments.ReviewComment
 	Labels() []labels.Label
 	Milestone() milestone.Milestone
 	FilesChanged() []file.Change
