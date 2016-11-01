@@ -1,8 +1,6 @@
 package client_test
 
 import (
-	"fmt"
-	"net/url"
 	"strings"
 	"time"
 
@@ -73,71 +71,76 @@ var _ = Describe("FetchCommitsToPathSince", func() {
 
 var _ = Describe("shared behavior", func() {
 	It("passes the correct URL to the fetcher", func() {
-		repoName := "test-repo-name"
-		repoOwner := "test-repo-owner"
-		testPath := "test-path"
-		now := time.Now()
-
-		expectedPath := fmt.Sprintf("/repos/%s/%s/commits", repoOwner, repoName)
-
-		fetcher := &fetcherfakes.FakeFetcher{}
-
-		c := &client.DefaultClient{
-			Fetcher:   fetcher,
-			RepoName:  repoName,
-			RepoOwner: repoOwner,
-		}
-
-		c.FetchCommitsToPathSince(testPath, now)
-		urlString := fetcher.FetchArgsForCall(0)
-		u, err := url.Parse(urlString)
-		Expect(err).ToNot(HaveOccurred())
-
-		query := u.Query()
-		Expect(query.Get("per_page")).To(Equal(client.NumberOfPagesToRequest))
-		Expect(query.Get("path")).To(Equal(testPath))
-		Expect(query.Get("since")).To(Equal(now.Format(client.DateFormat)))
-		Expect(u.Host).To(Equal("api.github.com"))
-		Expect(u.Path).To(Equal(expectedPath))
+		Fail("test not updated")
+		// repoName := "test-repo-name"
+		// repoOwner := "test-repo-owner"
+		// testPath := "test-path"
+		// now := time.Now()
+		//
+		// expectedPath := fmt.Sprintf("/repos/%s/%s/commits", repoOwner, repoName)
+		//
+		// fetcher := &fetcherfakes.FakeFetcher{}
+		//
+		// c := &client.DefaultClient{
+		// 	Fetcher:   fetcher,
+		// 	RepoName:  repoName,
+		// 	RepoOwner: repoOwner,
+		// }
+		//
+		// c.FetchCommitsToPathSince(testPath, now)
+		// urlString := fetcher.FetchArgsForCall(0)
+		// u, err := url.Parse(urlString)
+		// Expect(err).ToNot(HaveOccurred())
+		//
+		// query := u.Query()
+		// Expect(query.Get("per_page")).To(Equal(client.NumberOfPagesToRequest))
+		// Expect(query.Get("path")).To(Equal(testPath))
+		// Expect(query.Get("since")).To(Equal(now.Format(client.DateFormat)))
+		// Expect(u.Host).To(Equal("api.github.com"))
+		// Expect(u.Path).To(Equal(expectedPath))
 	})
 
 	It("only adds a path when non empty", func() {
-		now := time.Now()
-		fetcher := &fetcherfakes.FakeFetcher{}
-
-		c := &client.DefaultClient{
-			Fetcher: fetcher,
-		}
-
-		c.FetchCommitsToPathSince("", now)
-		urlString := fetcher.FetchArgsForCall(0)
-		u, err := url.Parse(urlString)
-		Expect(err).ToNot(HaveOccurred())
-
-		query := u.Query()
-		queryMap := map[string][]string(query)
-
-		_, ok := queryMap["path"]
-		Expect(ok).To(BeFalse())
+		Fail("test not updated")
+		//
+		// now := time.Now()
+		// fetcher := &fetcherfakes.FakeFetcher{}
+		//
+		// c := &client.DefaultClient{
+		// 	Fetcher: fetcher,
+		// }
+		//
+		// c.FetchCommitsToPathSince("", now)
+		// urlString := fetcher.FetchArgsForCall(0)
+		// u, err := url.Parse(urlString)
+		// Expect(err).ToNot(HaveOccurred())
+		//
+		// query := u.Query()
+		// queryMap := map[string][]string(query)
+		//
+		// _, ok := queryMap["path"]
+		// Expect(ok).To(BeFalse())
 	})
 
 	It("only adds since if non zero", func() {
-		emptyTime := time.Time{}
-		fetcher := &fetcherfakes.FakeFetcher{}
-
-		c := &client.DefaultClient{
-			Fetcher: fetcher,
-		}
-
-		c.FetchCommitsToPathSince("", emptyTime)
-		urlString := fetcher.FetchArgsForCall(0)
-		u, err := url.Parse(urlString)
-		Expect(err).ToNot(HaveOccurred())
-
-		query := u.Query()
-		queryMap := map[string][]string(query)
-
-		_, ok := queryMap["since"]
-		Expect(ok).To(BeFalse())
+		Fail("test not updated")
+		//
+		// emptyTime := time.Time{}
+		// fetcher := &fetcherfakes.FakeFetcher{}
+		//
+		// c := &client.DefaultClient{
+		// 	Fetcher: fetcher,
+		// }
+		//
+		// c.FetchCommitsToPathSince("", emptyTime)
+		// urlString := fetcher.FetchArgsForCall(0)
+		// u, err := url.Parse(urlString)
+		// Expect(err).ToNot(HaveOccurred())
+		//
+		// query := u.Query()
+		// queryMap := map[string][]string(query)
+		//
+		// _, ok := queryMap["since"]
+		// Expect(ok).To(BeFalse())
 	})
 })

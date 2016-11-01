@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/calebamiles/github-client/handle"
-	"github.com/calebamiles/github-client/labels"
 	"github.com/calebamiles/github-client/milestone"
 	"github.com/calebamiles/github-client/state"
 )
@@ -105,7 +104,6 @@ type basicPullRequest struct {
 	fileChangesURL string
 	numberString   string
 	reviewers      []string
-	labels         []labels.Label
 	milestone      milestone.Milestone
 }
 

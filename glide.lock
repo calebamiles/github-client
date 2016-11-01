@@ -1,15 +1,10 @@
-hash: c40fd4847f171da38ecee7579bae390db7a2ad48daccd991d4ff78b3315e4132
-updated: 2016-10-31T18:08:41.577023066-07:00
+hash: a159324f382e6d18b79358ed37c6588882226d158cd8363a5c45233c97f18e04
+updated: 2016-10-31T22:23:10.753875877-07:00
 imports:
 - name: github.com/boltdb/bolt
   version: 4b1ebc1869ad66568b313d0dc410e2be72670dda
   subpackages:
   - '...'
-- name: github.com/golang/protobuf
-  version: 98fa357170587e470c5f27d3c3ea0947b71eb455
-  subpackages:
-  - proto
-  - ptypes/timestamp
 - name: github.com/onsi/ginkgo
   version: a8ccd817611666211fdf6e6a752174a0db8374a8
   subpackages:
@@ -48,8 +43,6 @@ imports:
   version: c200b10b5d5e122be351b67af224adc6128af5bf
   subpackages:
   - unix
-- name: gopkg.in/vmihailenco/msgpack.v2
-  version: 38f3708c44f1402aeb2f137dd9a9dfb12bae2204
 - name: gopkg.in/yaml.v2
   version: a5b47d31c556af34a302ce5d659e6fea44d90de0
 testImports: []

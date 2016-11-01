@@ -5,34 +5,22 @@ import (
 	"log"
 	"time"
 
-	"github.com/calebamiles/github-client/comments"
 	"github.com/calebamiles/github-client/handle"
 )
 
-// A Commit represents basic information about a commit including comments
+// A Commit represents basic information about a commit and will one day include comments
 type Commit interface {
 	SHA() string
 	Author() Author
 	Date() time.Time
 	ParentSHAs() []string
-	Comments() []comments.Comment
 
-	String() string
-}
-
-// A CommitWithoutComments provides basic information relating to a commit
-type CommitWithoutComments interface {
-	SHA() string
-	Author() Author
-	Date() time.Time
-	ParentSHAs() []string
-	CommentsURL() string
 	String() string
 }
 
 // New returns a list of CommitWithoutComments from raw JSON
-func New(rawJSON []byte) ([]CommitWithoutComments, error) {
-	var commits []CommitWithoutComments
+func New(rawJSON []byte) ([]Commit, error) {
+	var commits []Commit
 	cs := []*githubCommit{}
 
 	err := json.Unmarshal(rawJSON, &cs)

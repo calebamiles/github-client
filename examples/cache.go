@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"sync/atomic"
-	"time"
 
 	"github.com/boltdb/bolt"
 	"github.com/calebamiles/github-client/client"
@@ -19,12 +18,12 @@ func main() {
 		panic(err)
 	}
 
-	_, err = c.FetchIssuesSince(time.Time{})
+	_, err = c.FetchPullRequests()
 	if err != nil {
 		panic(err)
 	}
 
-	_, err = c.FetchIssuesSince(time.Time{})
+	_, err = c.FetchPullRequests()
 	if err != nil {
 		panic(err)
 	}

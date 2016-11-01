@@ -3,14 +3,13 @@ package client
 import (
 	"fmt"
 	"net/url"
-	"time"
 
 	"github.com/calebamiles/github-client/comments"
 	"github.com/calebamiles/github-client/issues"
 )
 
-// FetchIssuesSince returns all issues against the repository, optionally since a non zero time
-func (c *DefaultClient) FetchIssuesSince(since time.Time) ([]issues.Issue, error) {
+// FetchIssuesSince returns all issues against the repository
+func (c *DefaultClient) FetchIssues() ([]issues.Issue, error) {
 	urlString := fmt.Sprintf("https://api.github.com/repos/%s/%s/issues", c.RepoOwner, c.RepoName)
 	u, err := url.Parse(urlString)
 	if err != nil {
@@ -18,10 +17,6 @@ func (c *DefaultClient) FetchIssuesSince(since time.Time) ([]issues.Issue, error
 	}
 
 	params := &url.Values{}
-	if !since.IsZero() {
-		params.Add("since", since.Format(DateFormat))
-	}
-
 	params.Add("per_page", NumberOfPagesToRequest)
 	u.RawQuery = params.Encode()
 

@@ -6,16 +6,14 @@ import (
 	"github.com/calebamiles/github-client/cache"
 	"github.com/calebamiles/github-client/client/internal/client"
 	"github.com/calebamiles/github-client/client/internal/fetcher"
-	"github.com/calebamiles/github-client/commits"
-	"github.com/calebamiles/github-client/issues"
-	"github.com/calebamiles/github-client/prs"
+	"github.com/calebamiles/github-client/prs/pr"
 )
 
 // A Client handles basic read only operations against the GitHub API
 type Client interface {
-	FetchCommits() (commits []commits.Commit, err error)
-	FetchIssues() (issues []issues.Issue, err error)
-	FetchPullRequests() (pullRequests []prs.PullRequest, err error)
+	FetchPullRequests() (pullRequests []pr.PullRequest, err error)
+	// FetchCommits() (commits []commits.Commit, err error)
+	// FetchIssues() (issues []issues.Issue, err error)
 	FetchPage(url string) (pageContent []byte, err error)
 	Done() error
 }

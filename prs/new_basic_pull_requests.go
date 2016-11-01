@@ -43,8 +43,14 @@ func (a *prAccumulator) Add(p pr.BasicPullRequest, err error) {
 	a.Lock()
 	defer a.Unlock()
 
-	a.pullRequests = append(a.pullRequests, p)
-	a.errors = append(a.errors, err)
+	if p != nil {
+		a.pullRequests = append(a.pullRequests, p)
+	}
+
+	if err != nil {
+		a.errors = append(a.errors, err)
+	}
+
 	a.wg.Done()
 }
 

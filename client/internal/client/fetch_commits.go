@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/calebamiles/github-client/client/internal/commit"
 	"github.com/calebamiles/github-client/commits"
 )
 
@@ -30,7 +29,5 @@ func (c *DefaultClient) FetchCommits() ([]commits.Commit, error) {
 		return nil, err
 	}
 
-	processor := commit.NewProcessor(c.Fetcher)
-
-	return processor.FetchAndAddComments(commitsWithoutComments)
+	return commitsWithoutComments, nil
 }

@@ -5,7 +5,6 @@ import (
 
 	"github.com/calebamiles/github-client/comments"
 	"github.com/calebamiles/github-client/commits"
-	"github.com/calebamiles/github-client/labels"
 	"github.com/calebamiles/github-client/milestone"
 	"github.com/calebamiles/github-client/prs/file"
 )
@@ -25,13 +24,12 @@ type PullRequest interface {
 	ClosedAt() time.Time
 	MergedAt() time.Time
 
+	Milestone() milestone.Milestone
+
+	// expensive methods requiring an additional API call
 	Commits() []commits.Commit
 	Comments() []comments.Comment
-	// TODO add this back soon
-	// ReviewComments() []comments.ReviewComment
-	Labels() []labels.Label
-	Milestone() milestone.Milestone
-	FilesChanged() []file.Change
+	FilesChanged() []file.ChangeSet
 
 	String() string
 }
